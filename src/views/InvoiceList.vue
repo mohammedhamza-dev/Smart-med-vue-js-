@@ -3,55 +3,140 @@
     <Loading />
   </div>
 
-  <div v-else class="p-3 max-w-[1300px] mt-[100px] mx-auto">
-    <h1 class="md:text-3xl text-2xl font-semibold mb-[60px]">
-      Welcome , {{ userName }}
+  <div v-else class="p-4 max-w-[1300px] mt-[100px] mx-auto">
+    <h1 class="text-3xl font-semibold mb-4">
+      Invoices for Customer #{{ customerId }}
     </h1>
 
-    <!-- Add Customer Button -->
+    <!-- Add Invoice Button -->
     <button
       @click="openModal()"
-      class="bg-[#faaf40] cursor-pointer hover:bg-[#FCB852FF] duration-[0.7s] active:bg-[#F89F1BFF] text-white px-4 py-2 md:text-[15px] text-[10px] rounded mb-4"
+      class="bg-[#faaf40] cursor-pointer hover:bg-[#FCB852FF] duration-[0.7s] active:bg-[#F89F1BFF] text-white px-4 py-2 rounded mb-4"
     >
-      Add Customer
+      Add Invoice
     </button>
-
-    <div class="overflow-x-auto">
-      <table
-        class="w-full border border-gray-300 bg-white rounded-lg overflow-hidden"
+    <!-- Alert Info -->
+    <div
+      v-if="invoices == 0"
+      class="bg-blue-200 px-[40px] py-[40px] mx-2 my-4 rounded-md md:text-lg text-[13px] flex items-center mx-auto"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        class="text-blue-600 min-w-5 min-h-5 w-5 h-5 sm:min-w-5 sm:min-h-5 sm:w-5 sm:h-5 mr-3"
       >
-        <thead>
-          <tr
-            class="bg-indigo-900 text-white text-left uppercase text-sm font-semibold"
-          >
-            <th class="p-4">Name</th>
-            <th class="p-4">Phone</th>
-            <th class="p-4">Address</th>
-            <th class="p-4">start_date</th>
-            <th class="p-4">free_trial</th>
-            <th class="p-4">note</th>
+        <path
+          fill="currentColor"
+          d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm.25,5a1.5,1.5,0,1,1-1.5,1.5A1.5,1.5,0,0,1,12.25,5ZM14.5,18.5h-4a1,1,0,0,1,0-2h.75a.25.25,0,0,0,.25-.25v-4.5a.25.25,0,0,0-.25-.25H10.5a1,1,0,0,1,0-2h1a2,2,0,0,1,2,2v4.75a.25.25,0,0,0,.25.25h.75a1,1,0,1,1,0,2Z"
+        ></path>
+      </svg>
+      <span class="text-blue-800">
+        There are currently no invoices associated with this customer. You can
+        add a new invoice by clicking the button above
+      </span>
+    </div>
+    <div v-else>
+      <!-- Invoices Table -->
+      <div class="overflow-x-auto">
+        <table
+          class="w-full border border-gray-300 bg-white rounded-lg overflow-hidden"
+        >
+          <thead>
+            <tr
+              class="bg-indigo-900 text-white text-left uppercase text-sm font-semibold"
+            >
+              <th class="p-4">Invoice ID</th>
+              <th class="p-4">Customer ID</th>
+              <th class="p-4">Invoice Date</th>
+              <th class="p-4">Done</th>
+              <th class="p-4">Created By</th>
+              <th class="p-4 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="invoice in invoices"
+              :key="invoice.id"
+              class="border border-gray-700 bg-gray-100 transition cursor-pointer hover:bg-gray-200"
+            >
+              <td class="p-4 text-gray-700 whitespace-nowrap">
+                {{ invoice.id }}
+              </td>
+              <td class="p-4 text-gray-700 whitespace-nowrap">
+                {{ invoice.customer_id }}
+              </td>
+              <td class="p-4 text-gray-700 whitespace-nowrap">
+                {{ invoice.invoice_date }}
+              </td>
+              <td class="p-4 text-gray-700 whitespace-nowrap">
+                {{ invoice.done ? "Yes" : "No" }}
+              </td>
+              <td class="p-4 text-gray-700 whitespace-nowrap">
+                {{ invoice.creator.name }}
+              </td>
 
-            <th class="p-4 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="customer in customers"
-            :key="customer.id"
-            class="border border-gray-700 bg-gray-100 transition hover:bg-gray-200"
-          >
-            <td class="p-4 text-gray-700">{{ customer.name }}</td>
-            <td class="p-4 text-gray-700">{{ customer.phone }}</td>
-            <td class="p-4 text-gray-700">{{ customer.address }}</td>
+              <!-- Delete Confirmation Modal -->
+              <div
+                v-if="deleteModalOpen"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+              >
+                <div class="relative p-4 w-full max-w-md">
+                  <div class="relative bg-white rounded-lg shadow-lg">
+                    <button
+                      @click="deleteModalOpen = false"
+                      type="button"
+                      class="absolute top-3 right-2.5 text-gray-400 hover:text-gray-900 rounded-lg text-sm w-8 h-8"
+                    >
+                      ✖
+                    </button>
+                    <div class="p-4 text-center">
+                      <h3 class="mb-5 text-lg font-normal text-gray-500">
+                        Are you sure you want to delete this invoice?
+                      </h3>
 
-            <td class="p-4 text-gray-700">{{ customer.start_date }}</td>
-            <td class="p-4 text-gray-700">{{ customer.free_trial }}</td>
-            <td class="p-4 text-gray-700">{{ customer.note }}</td>
+                      <button
+                        @click="deleteInvoice"
+                        type="button"
+                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
+                      >
+                        <svg
+                          v-if="loading"
+                          class="animate-spin h-5 w-5 mr-2 text-white"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke-opacity="0.25"
+                          ></circle>
+                          <path
+                            d="M12 2a10 10 0 0 1 10 10"
+                            stroke-opacity="0.75"
+                          ></path>
+                        </svg>
+                        <p v-else="loading">Yes, delete</p>
 
-            <td class="p-4 flex justify-center gap-2">
-              <div class="flex">
+                        <span v-if="loading">Processing</span>
+                      </button>
+
+                      <button
+                        @click="deleteModalOpen = false"
+                        class="py-2.5 px-5 ml-3 text-sm font-medium text-gray-900 bg-white rounded-lg border hover:bg-gray-100"
+                      >
+                        No, cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <td class="p-4 flex justify-center gap-2">
                 <button
-                  @click="openModal(customer)"
+                  @click="openModal(invoice)"
                   class="p-2 rounded-full group transition-all duration-500 flex item-center"
                 >
                   <svg
@@ -70,7 +155,7 @@
                   </svg>
                 </button>
                 <button
-                  @click="confirmDelete(customer.id)"
+                  @click="confirmDelete(invoice.id)"
                   class="p-2 cursor-pointer rounded-full group transition-all duration-500 flex item-center"
                 >
                   <svg
@@ -90,7 +175,7 @@
                 </button>
 
                 <button
-                  @click="goToDetails(customer.id)"
+                  @click="goToInvoiceDetails(invoice.id)"
                   class="p-2 cursor-pointer rounded-full group transition-all duration-500 flex item-center"
                 >
                   <img
@@ -99,163 +184,85 @@
                     alt=""
                   />
                 </button>
-                <button
-                  @click="goToInvoice(customer.id)"
-                  class="p-2 cursor-pointer rounded-full group transition-all duration-500 flex item-center"
-                >
-                  <img
-                    class="h-[21px]  mt-[-1px]"
-                    src="/src/assets/invoice-instead-line-svgrepo-com.svg"
-                    alt=""
-                  />
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Pagination Controls -->
+      <div class="flex justify-between items-center mt-4">
+        <button
+          @click="fetchInvoices(currentPage - 1)"
+          :disabled="currentPage === 1"
+          class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:bg-gray-200"
+        >
+          Previous
+        </button>
+
+        <span class="text-gray-700">
+          Page {{ currentPage }} of {{ lastPage }}
+        </span>
+
+        <button
+          @click="fetchInvoices(currentPage + 1)"
+          :disabled="currentPage === lastPage"
+          class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:bg-gray-200"
+        >
+          Next
+        </button>
+      </div>
     </div>
 
-    <!-- Pagination Controls -->
-    <div class="flex justify-between items-center mt-4">
-      <button
-        @click="fetchCustomers(pagination.current_page - 1)"
-        :disabled="pagination.current_page === 1"
-        class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-      >
-        Previous
-      </button>
-
-      <span
-        >Page {{ pagination.current_page }} of {{ pagination.last_page }}</span
-      >
-
-      <button
-        @click="fetchCustomers(pagination.current_page + 1)"
-        :disabled="pagination.current_page >= pagination.last_page"
-        class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-      >
-        Next
-      </button>
-    </div>
-
-    <!-- Add/Edit Modal -->
+    <!-- Add/Edit Invoice Modal -->
     <div
       v-if="isModalOpen"
-      class="fixed inset-0 bg-black/50 overflow-y-auto flex items-center justify-center"
-      @click.self="closeModal"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center"
     >
-      <div
-        class="bg-white p-6 mt-[100px]  rounded-2xl shadow-xl max-w-md w-full transform scale-95 border border-gray-200"
-      >
+      <div class="bg-white p-6 rounded-2xl shadow-xl max-w-md w-full">
         <div class="flex justify-between items-center border-b pb-3 mb-3">
           <h2 class="text-xl font-semibold text-gray-800">
-            {{ form.id ? "Edit" : "Add" }} Customer
+            {{ form.id ? "Edit" : "Add" }} Invoice
           </h2>
-          <button
-            @click.prevent="closeModal"
-            class="text-gray-400 hover:text-gray-700 transition"
-          >
+          <button @click="closeModal" class="text-gray-400 hover:text-gray-700">
             ✖
           </button>
         </div>
-
-        <form class="space-y-4">
-        <div class="flex gap-3">
-
-            <!-- Name Input -->
+        <form @submit.prevent="saveInvoice">
+          <div class="space-y-4">
             <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Name</label
-            >
-            <input
-              v-model="form.name"
-              type="text"
-              placeholder="Enter name"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
-          </div>
-
-          <!-- Phone Input -->
-          <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Phone</label
-            >
-            <input
-              v-model="form.phone"
-              type="tel"
-              placeholder="Enter phone number"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-
-
-            <!-- Address Input -->
+              <label class="block text-gray-600 text-sm font-medium mb-1"
+                >Invoice Date</label
+              >
+              <input
+                v-model="form.invoice_date"
+                type="date"
+                required
+                class="w-full p-3 border border-gray-300 rounded-xl"
+              />
+            </div>
             <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Address</label
-            >
-            <input
-              v-model="form.address"
-              type="text"
-              placeholder="Enter address"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
+              <label class="block text-gray-600 text-sm font-medium mb-1"
+                >Done</label
+              >
+              <select
+                v-model="form.done"
+                class="w-full p-3 border border-gray-300 rounded-xl"
+              >
+                <option :value="true">Yes</option>
+                <option :value="false">No</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Start Date</label
-            >
-            <input
-              v-model="form.start_date"
-              type="date"
-              placeholder="Enter name"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
-          </div>
-        </div> <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Free Trial</label
-            >
-            <input
-              v-model="form.free_trial"
-              type="text"
-              placeholder="Enter name"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
-          </div>
-          <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Note</label
-            >
-            <textarea
-              v-model="form.note"
-              type="text"
-              placeholder="Enter name"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            ></textarea>
-          </div>
-
-          <!-- Action Buttons -->
           <div class="flex justify-end space-x-3 mt-4">
             <button
               @click.prevent="closeModal"
-              class="px-5 py-2.5 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
+              class="px-5 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200"
             >
               Cancel
             </button>
             <button
-              @click.prevent="saveCustomer"
-              class="px-5 py-2.5 flex items-center text-white bg-blue-600 rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 transition"
+              type="submit"
+              class="px-5 py-2 flex items-center text-white bg-blue-600 rounded-xl hover:bg-blue-700"
             >
               <svg
                 v-if="loading"
@@ -270,161 +277,62 @@
                 <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
                 <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"></path>
               </svg>
-              <span v-if="loading">Processing</span>
-              <span v-else>Save</span>
+              {{ loading ? "Processing..." : "Save" }}
             </button>
           </div>
         </form>
-      </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div
-      v-if="deleteModalOpen"
-      id="popup-modal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-    >
-      <div class="relative p-4 w-full max-w-md">
-        <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
-          <!-- Close Button -->
-          <button
-            @click="deleteModalOpen = false"
-            type="button"
-            class="absolute top-3 end-2.5 text-gray-400 bg-transparent flex justify-center items-center hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 dark:hover:bg-gray-600 dark:hover:text-white"
-          >
-            <svg
-              class="w-3 h-3"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 14 14"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-              />
-            </svg>
-            <span class="sr-only">Close modal</span>
-          </button>
-
-          <!-- Modal Content -->
-          <div class="p-4 md:p-5 text-center">
-            <svg
-              class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-            <h3
-              class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
-            >
-              Are you sure you want to delete this customer?
-            </h3>
-            <button
-              @click="deleteCustomer"
-              type="button"
-              class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
-            >
-              <svg
-                v-if="loading"
-                class="animate-spin h-5 w-5 mr-2 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
-                <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"></path>
-              </svg>
-              <p v-else="loading">Yes, delete</p>
-
-              <span v-if="loading">Processing</span>
-            </button>
-            <button
-              @click="deleteModalOpen = false"
-              type="button"
-              class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-            >
-              No, cancel
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
 import axios from "axios";
-import { useToast } from "vue-toastification";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
 import { useRouter } from "vue-router";
 import VueCookies from "vue-cookies"; // Import vue-cookies
 
+axios.defaults.baseURL = "http://localhost:8000/api";
+
 export default {
   setup() {
-    const customers = ref([]);
-    const pagination = ref({
-      current_page: 1,
-      per_page: 10,
-      total: 0,
-      last_page: 1,
-    });
-    const router = useRouter();
-    const API_URL = import.meta.env.VITE_API_URL;
-    const goToDetails = (id) => {
-      router.push(`/Customer-details/${id}`);
-    };
-    const goToInvoice = (id) => {
-      router.push(`/invoices/${id}`);
-    };
+    const route = useRoute();
+    const customerId = ref(route.params.customer_id);
+    const invoices = ref([]);
+    const loading = ref(false);
+    const getDataLoading = ref(false);
 
     const isModalOpen = ref(false);
     const deleteModalOpen = ref(false);
-    const loading = ref(false);
-    const getDataLoading = ref(true);
-
-    const form = ref({
-      id: null,
-      name: "",
-      start_date: "",
-      free_trial: "",
-      note: "",
-
-      phone: "",
-      address: "",
-      created_by: 1,
-    });
     const deleteId = ref(null);
-    const toast = useToast();
-    const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
+    const router = useRouter();
+    const currentPage = ref(1);
+    const lastPage = ref(1);
+
+    const userId = ref(null);
     const userName = ref(null);
+    const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
+    const form = ref({
+      customer_id: customerId.value,
+      invoice_date: "",
+      done: false,
+      created_by: userId.value,
+    });
 
     const fetchUser = async () => {
       if (!token) {
         console.error("JWT token not found in cookies!");
         return;
       }
+
       try {
-        const response = await axios.get("/user", {
+        const response = await axios.get("http://localhost:8000/api/user", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        userId.value = response.data.id;
         userName.value = response.data.name;
 
         // Set created_by when fetching user
@@ -433,42 +341,40 @@ export default {
         console.error("Error fetching user:", error);
       }
     };
-
-    const fetchCustomers = async (page = 1) => {
+    const goToInvoiceDetails = (invoiceId) => {
+      router.push(`/invoices-details/${invoiceId}`);
+    };
+    const fetchInvoices = async (page = 1) => {
+      getDataLoading.value = true;
       try {
-        const { data } = await axios.get(
-          `${API_URL}/customers?page=${page}&per_page=${pagination.value.per_page}`
+        const response = await axios.get(
+          `/invoices/customer/${customerId.value}?page=${page}`
         );
-        customers.value = data.data;
-        pagination.value = {
-          current_page: data.current_page,
-          per_page: data.per_page,
-          total: data.total,
-          last_page: data.last_page,
-        };
+
+        // Ensure `done` is always a boolean
+        invoices.value = response.data.data.map((invoice) => ({
+          ...invoice,
+          done: Boolean(invoice.done), // Convert to true/false
+        }));
+
+        currentPage.value = response.data.current_page;
+        lastPage.value = response.data.last_page;
       } catch (error) {
-        console.error("Error fetching customers:", error);
-      }
-    };
-    //for  get user and   fetchCustomers then  loading be false
-    const fetchUserAndCustomers = async () => {
-      getDataLoading.value = true; // Start loading
-      try {
-        await Promise.all([fetchUser(), fetchCustomers()]); // Fetch both user and customers
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching invoices:", error);
       } finally {
-        getDataLoading.value = false; // Set loading to false after both finish
+        getDataLoading.value = false;
       }
     };
 
-    // Call this instead of fetchCustomers() and fetchUser() separately
-    fetchUserAndCustomers();
-
-    const openModal = (customer = null) => {
-      form.value = customer
-        ? { ...customer }
-        : { id: null, name: "", phone: "", address: "", created_by: 1 };
+    const openModal = (invoice = null) => {
+      form.value = invoice
+        ? { ...invoice, done: invoice.done ?? false } // Ensure `done` is never undefined
+        : {
+            customer_id: customerId.value,
+            invoice_date: "",
+            done: false,
+            created_by: userId.value,
+          };
       isModalOpen.value = true;
     };
 
@@ -476,24 +382,18 @@ export default {
       isModalOpen.value = false;
     };
 
-    const saveCustomer = async () => {
+    const saveInvoice = async () => {
       loading.value = true;
       try {
         if (form.value.id) {
-          await axios.put(
-            `${API_URL}/customers/${form.value.id}`,
-            form.value
-          );
-          toast.success("Customer updated successfully!");
+          await axios.put(`/invoices/${form.value.id}`, form.value);
         } else {
-          await axios.post(`${API_URL}/customers`, form.value);
-          toast.success("Customer added successfully!");
+          await axios.post("/invoices", form.value);
         }
+        fetchInvoices();
         closeModal();
-        fetchCustomers();
       } catch (error) {
-        console.error("Error saving customer:", error);
-        toast.error("Error saving customer!");
+        console.error("Error saving invoice:", error);
       } finally {
         loading.value = false;
       }
@@ -504,48 +404,42 @@ export default {
       deleteModalOpen.value = true;
     };
 
-    const deleteCustomer = async () => {
+    const deleteInvoice = async () => {
       loading.value = true;
       try {
-        await axios.delete(
-          `${API_URL}/customers/${deleteId.value}`
-        );
+        await axios.delete(`/invoices/${deleteId.value}`);
         deleteModalOpen.value = false;
-        fetchCustomers();
-        toast.success("Customer deleted successfully!");
+        fetchInvoices();
       } catch (error) {
-        console.error("Error deleting customer:", error);
-        toast.error("Error deleting customer!");
+        console.error("Error deleting invoice:", error);
       } finally {
         loading.value = false;
       }
     };
 
-    fetchCustomers();
-    fetchUser();
-    fetchUserAndCustomers();
+    onMounted(fetchInvoices(), fetchUser());
+
     return {
-      customers,
-      pagination,
+      goToInvoiceDetails,
+      fetchUser,
+      getDataLoading,
+      currentPage,
+      lastPage,
+      customerId,
+      invoices,
+      loading,
       isModalOpen,
       deleteModalOpen,
-      loading,
-      form,
       deleteId,
-      fetchCustomers,
+      form,
       openModal,
       closeModal,
-      saveCustomer,
+      saveInvoice,
       confirmDelete,
-      deleteCustomer,
-      getDataLoading,
-      goToDetails,
-      goToInvoice,
-      userName,
+      deleteInvoice,
+      fetchInvoices,
     };
   },
-  components: {
-    Loading,
-  },
+  components: { Loading },
 };
 </script>

@@ -66,8 +66,8 @@
 <script>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
-
-axios.defaults.baseURL = 'http://localhost:8000/api'; // Set API base URL
+const API_URL = import.meta.env.VITE_API_URL;
+axios.defaults.baseURL = API_URL; // Set API base URL
 
 export default {
   setup() {
