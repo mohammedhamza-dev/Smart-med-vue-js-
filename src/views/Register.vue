@@ -1,5 +1,9 @@
 <template>
-  <div class="min-h-screen flex pt-[40px] items-center justify-center bg-gray-50 px-6">
+     <div v-if="dataLoading" >
+       <Loading/>
+        </div>
+
+  <div v-else class="min-h-screen flex pt-[40px] items-center justify-center bg-gray-50 px-6">
     <div
         class="max-w-4xl w-full h-full bg-white shadow-lg rounded-xl flex overflow-hidden"
       >
@@ -9,33 +13,35 @@
             Create an Account
           </h2>
   
-          <button
-            class="w-full mt-6 flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition"
+             <!-- Google Login Button -->
+        <button
+          @click="loginWithGoogle"
+          class="w-full mt-6 flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition"
+        >
+          <svg
+            class="w-5 h-5 mr-2"
+            viewBox="0 0 533.5 544.3"
+            fill="currentColor"
           >
-            <svg
-              class="w-5 h-5 mr-2"
-              viewBox="0 0 533.5 544.3"
-              fill="currentColor"
-            >
-              <path
-                d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z"
-                fill="#4285f4"
-              />
-              <path
-                d="M272.1 544.3c73.4 0 135.3-24.1 180.4-65.7l-87.7-68c-24.4 16.6-55.9 26-92.6 26-71 0-131.2-47.9-152.8-112.3H28.9v70.1c46.2 91.9 140.3 149.9 243.2 149.9z"
-                fill="#34a853"
-              />
-              <path
-                d="M119.3 324.3c-11.4-33.8-11.4-70.4 0-104.2V150H28.9c-38.6 76.9-38.6 167.5 0 244.4l90.4-70.1z"
-                fill="#fbbc04"
-              />
-              <path
-                d="M272.1 107.7c38.8-.6 76.3 14 104.4 40.8l77.7-77.7C405 24.6 339.7-.8 272.1 0 169.2 0 75.1 58 28.9 150l90.4 70.1c21.5-64.5 81.8-112.4 152.8-112.4z"
-                fill="#ea4335"
-              />
-            </svg>
-            Sign In with Google
-          </button>
+            <path
+              d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z"
+              fill="#4285f4"
+            />
+            <path
+              d="M272.1 544.3c73.4 0 135.3-24.1 180.4-65.7l-87.7-68c-24.4 16.6-55.9 26-92.6 26-71 0-131.2-47.9-152.8-112.3H28.9v70.1c46.2 91.9 140.3 149.9 243.2 149.9z"
+              fill="#34a853"
+            />
+            <path
+              d="M119.3 324.3c-11.4-33.8-11.4-70.4 0-104.2V150H28.9c-38.6 76.9-38.6 167.5 0 244.4l90.4-70.1z"
+              fill="#fbbc04"
+            />
+            <path
+              d="M272.1 107.7c38.8-.6 76.3 14 104.4 40.8l77.7-77.7C405 24.6 339.7-.8 272.1 0 169.2 0 75.1 58 28.9 150l90.4 70.1c21.5-64.5 81.8-112.4 152.8-112.4z"
+              fill="#ea4335"
+            />
+          </svg>
+          Sign In with Google
+        </button>
   
           <div class="my-6 text-gray-500 text-center relative border-t">
             <span
@@ -52,7 +58,7 @@
                 type="text"
                 placeholder="Full Name"
               />
-              <span v-if="registerErrors.name">{{ registerErrors.name[0] }}</span>
+              <p  class="text-red-600 mt-2 text-sm" v-if="registerErrors.name">{{ registerErrors.name[0] }}</p>
             </div>
   
             <div class="pb-3">
@@ -62,9 +68,9 @@
                 type="email"
                 placeholder="Email Address"
               />
-              <span v-if="registerErrors.email">{{
+              <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.email">{{
                 registerErrors.email[0]
-              }}</span>
+              }}</p>
             </div>
             <div class="pb-3">
               <input
@@ -83,9 +89,9 @@
                 placeholder="Confirm Password"
               />
   
-              <span v-if="registerErrors.password">{{
+              <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.password">{{
                 registerErrors.password[0]
-              }}</span>
+              }}</p>
             </div>
   
             <!-- Register Button -->
@@ -131,7 +137,12 @@
   import { useRouter } from "vue-router";
   import axios from "axios";
   import { useToast } from "vue-toastification";
-  
+  import VueCookies from "vue-cookies";
+  import Loading from "../components/Loading.vue";
+
+  const API_URL = import.meta.env.VITE_API_URL;
+axios.defaults.baseURL = API_URL; // Set API base URL
+
   export default {
     setup() {
       const router = useRouter();
@@ -146,14 +157,39 @@
       const registerSuccess = ref(null);
       const loading = ref(false);
       const toast = useToast();
-  
+      const token = VueCookies.get("jwt"); // Change 'jwt_token' to your actual JWT cookie name
+    const dataLoading = ref(false);
+    const fetchUser = async () => {
+      dataLoading.value=true
+      try {
+            const response = await axios.get("/user", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+      
+          } catch (error) {
+       
+          } finally {
+            dataLoading.value = false; // Hide the loading spinner after fetching is complete
+          }
+      };
+      // **Google Login Function**
+    const loginWithGoogle = async () => {
+      try {
+        const response = await axios.get("/google"); // Fetch Google login URL
+        window.location.href = response.data.url; // Redirect user to Google login page
+      } catch (error) {
+        console.error("Google login failed", error);
+        toast.error("Google login failed. Try again.");
+      }
+    };
+
       const register = async () => {
         loading.value = true; // Start loading
         try {
           registerErrors.value = {};
           registerSuccess.value = null;
           const response = await axios.post(
-            "http://localhost:8000/api/register",
+            "/register",
             registerForm.value
           );
           registerSuccess.value = response.data.message;
@@ -172,15 +208,21 @@
           loading.value = false; // Stop loading
         }
       };
-  
+      fetchUser();
+
       return {
         registerForm,
         registerErrors,
         registerSuccess,
         loading,
+        dataLoading,
         register,
+        loginWithGoogle
       };
     },
+      components: {
+    Loading,
+  },
   };
   </script>
   

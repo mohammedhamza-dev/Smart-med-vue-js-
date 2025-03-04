@@ -1,42 +1,49 @@
 <template>
-  <div class="min-h-screen flex pt-[20px] items-center justify-center bg-gray-50 px-6">
+  <div v-if="dataLoading">
+    <Loading />
+  </div>
+
+  <div v-else class="min-h-screen flex pt-[20px] items-center justify-center bg-gray-50 px-6">
     <div class="max-w-4xl w-full h-full bg-white shadow-lg rounded-xl flex overflow-hidden">
       <!-- Left Section (Form) -->
       <div class="w-full lg:w-1/2 p-8">
         <h2 class="text-2xl font-semibold text-gray-700 text-center">Login</h2>
 
+        <!-- Google Login Button -->
         <button
-            class="w-full mt-6 flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition"
+          @click="loginWithGoogle"
+          class="w-full mt-6 flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition"
+        >
+          <svg
+            class="w-5 h-5 mr-2"
+            viewBox="0 0 533.5 544.3"
+            fill="currentColor"
           >
-            <svg
-              class="w-5 h-5 mr-2"
-              viewBox="0 0 533.5 544.3"
-              fill="currentColor"
-            >
-              <path
-                d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z"
-                fill="#4285f4"
-              />
-              <path
-                d="M272.1 544.3c73.4 0 135.3-24.1 180.4-65.7l-87.7-68c-24.4 16.6-55.9 26-92.6 26-71 0-131.2-47.9-152.8-112.3H28.9v70.1c46.2 91.9 140.3 149.9 243.2 149.9z"
-                fill="#34a853"
-              />
-              <path
-                d="M119.3 324.3c-11.4-33.8-11.4-70.4 0-104.2V150H28.9c-38.6 76.9-38.6 167.5 0 244.4l90.4-70.1z"
-                fill="#fbbc04"
-              />
-              <path
-                d="M272.1 107.7c38.8-.6 76.3 14 104.4 40.8l77.7-77.7C405 24.6 339.7-.8 272.1 0 169.2 0 75.1 58 28.9 150l90.4 70.1c21.5-64.5 81.8-112.4 152.8-112.4z"
-                fill="#ea4335"
-              />
-            </svg>
-            Sign In with Google
-          </button>
+            <path
+              d="M533.5 278.4c0-18.5-1.5-37.1-4.7-55.3H272.1v104.8h147c-6.1 33.8-25.7 63.7-54.4 82.7v68h87.7c51.5-47.4 81.1-117.4 81.1-200.2z"
+              fill="#4285f4"
+            />
+            <path
+              d="M272.1 544.3c73.4 0 135.3-24.1 180.4-65.7l-87.7-68c-24.4 16.6-55.9 26-92.6 26-71 0-131.2-47.9-152.8-112.3H28.9v70.1c46.2 91.9 140.3 149.9 243.2 149.9z"
+              fill="#34a853"
+            />
+            <path
+              d="M119.3 324.3c-11.4-33.8-11.4-70.4 0-104.2V150H28.9c-38.6 76.9-38.6 167.5 0 244.4l90.4-70.1z"
+              fill="#fbbc04"
+            />
+            <path
+              d="M272.1 107.7c38.8-.6 76.3 14 104.4 40.8l77.7-77.7C405 24.6 339.7-.8 272.1 0 169.2 0 75.1 58 28.9 150l90.4 70.1c21.5-64.5 81.8-112.4 152.8-112.4z"
+              fill="#ea4335"
+            />
+          </svg>
+          Sign In with Google
+        </button>
 
         <div class="my-6 text-gray-500 text-center relative border-t">
           <span class="bg-white px-2 absolute left-1/2 transform -translate-x-1/2 -top-3">or</span>
         </div>
 
+        <!-- Email/Password Login Form -->
         <form @submit.prevent="login" class="space-y-4">
           <div class="pb-3">
             <input
@@ -46,7 +53,7 @@
               placeholder="Email Address"
               required
             />
-            <span v-if="loginErrors.email" class="text-red-500 text-sm">{{ loginErrors.email }}</span>
+            <p v-if="loginErrors.email" class="text-red-600 mt-2 text-sm">{{ loginErrors.email }}</p>
           </div>
 
           <div class="pb-3">
@@ -57,11 +64,11 @@
               placeholder="Password"
               required
             />
-            <span v-if="loginErrors.password" class="text-red-500 text-sm">{{ loginErrors.password }}</span>
+            <p v-if="loginErrors.password" class="text-red-600 mt-2 text-sm">{{ loginErrors.password }}</p>
           </div>
 
           <!-- General Error -->
-          <span v-if="generalError" class="text-red-500 text-sm">{{ generalError }}</span>
+          <span v-if="generalError" class="text-red-600 mt-2 text-sm">{{ generalError }}</span>
 
           <!-- Login Button -->
           <button
@@ -87,59 +94,67 @@
           </button>
         </form>
       </div>
-
-      <!-- Right Section (Image) -->
-      <div class="flex-1 bg-indigo-900 m-3 rounded-xl text-center hidden lg:flex">
-        <div
-          class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-          style="background-image: url('/src/assets/smartlogo2.png')"
-        ></div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 import axios from "axios";
 import { useToast } from "vue-toastification";
 import VueCookies from "vue-cookies";
+import Loading from "../components/Loading.vue";
+
+const API_URL = import.meta.env.VITE_API_URL;
+axios.defaults.baseURL = API_URL;
 
 export default {
   setup() {
-    const router = useRouter();
-    const loginForm = ref({
-      email: '',
-      password: '',
-    });
+    const loginForm = ref({ email: "", password: "" });
     const loginErrors = ref({});
     const generalError = ref(null);
     const loading = ref(false);
+    const dataLoading = ref(false);
     const toast = useToast();
 
+    // Fetch user data (if needed)
+    const token = VueCookies.get("jwt");
+    const fetchUser = async () => {
+      dataLoading.value = true;
+      try {
+        await axios.get("/user", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        dataLoading.value = false;
+      }
+    };
+
+    // Handle normal login
     const login = async () => {
       loading.value = true;
       loginErrors.value = {};
       generalError.value = null;
 
       try {
-        const response = await axios.post("http://localhost:8000/api/login", loginForm.value);
-        
-        // Save JWT token in cookies
-        VueCookies.set("jwt", response.data.token, "1d"); // 1-day expiration
+        const response = await axios.post("/login", loginForm.value);
+
+        // Save JWT token
+        VueCookies.set("jwt", response.data.token, "1d");
 
         toast.success("Login successful!", { timeout: 2000 });
 
         setTimeout(() => {
-          router.push("/dashboard"); 
+          window.location.href = "/";
         }, 2000);
       } catch (error) {
         if (error.response) {
           if (error.response.status === 422) {
             loginErrors.value = error.response.data.errors || {};
           } else {
-            generalError.value = error.response.data.message || "Login failed, please try again.";
+            generalError.value = error.response.data.message || "Login failed.";
           }
         } else {
           generalError.value = "An unexpected error occurred.";
@@ -149,31 +164,29 @@ export default {
       }
     };
 
+    // **Google Login Function**
+    const loginWithGoogle = async () => {
+      try {
+        const response = await axios.get("/google"); // Fetch Google login URL
+        window.location.href = response.data.url; // Redirect user to Google login page
+      } catch (error) {
+        console.error("Google login failed", error);
+        toast.error("Google login failed. Try again.");
+      }
+    };
+
+    fetchUser();
+
     return {
       loginForm,
       loginErrors,
       generalError,
       loading,
+      dataLoading,
       login,
+      loginWithGoogle,
     };
   },
+  components: { Loading },
 };
-
 </script>
-
-<style>
-.input-field {
-  width: 100%;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  outline: none;
-  font-size: 14px;
-  background-color: #f9fafb;
-  transition: border-color 0.3s;
-}
-.input-field:focus {
-  border-color: #6366f1;
-  background-color: #ffffff;
-}
-</style>

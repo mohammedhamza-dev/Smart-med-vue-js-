@@ -3,20 +3,311 @@
     <Loading />
   </div>
 
-  <div v-else class="p-3 max-w-[1300px] mt-[100px] mx-auto">
-    <h1 class="md:text-3xl text-2xl font-semibold mb-[60px]">
-      Welcome , {{ userName }}
+  <div v-else class="p-3 2xl:max-w-[1800px] max-w-[1300px] mt-[100px] mx-auto">
+    <h1 class="md:text-3xl text-2xl font-[500] mb-[20px]">
+      Welcome , <span class="text-indigo-700">{{ userName || "User" }}</span>
     </h1>
 
     <!-- Add Customer Button -->
     <button
       @click="openModal()"
-      class="bg-[#faaf40] cursor-pointer hover:bg-[#FCB852FF] duration-[0.7s] active:bg-[#F89F1BFF] text-white px-4 py-2 md:text-[15px] text-[10px] rounded mb-4"
+      class="bg-indigo-800 dcursor-pointer hover:bg-indigo-700 duration-[0.7s] active:bg-indigo-900 text-white px-4 py-2 md:text-[15px] text-[10px] rounded mb-4"
     >
       Add Customer
     </button>
+    <!-- Alert Info -->
+    <div
+      v-if="customers == 0"
+      class="bg-blue-200 px-[40px] py-[40px] mx-2 my-4 rounded-md md:text-lg text-[13px] flex items-center mx-auto"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        class="text-blue-600 min-w-5 min-h-5 w-5 h-5 sm:min-w-5 sm:min-h-5 sm:w-5 sm:h-5 mr-3"
+      >
+        <path
+          fill="currentColor"
+          d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm.25,5a1.5,1.5,0,1,1-1.5,1.5A1.5,1.5,0,0,1,12.25,5ZM14.5,18.5h-4a1,1,0,0,1,0-2h.75a.25.25,0,0,0,.25-.25v-4.5a.25.25,0,0,0-.25-.25H10.5a1,1,0,0,1,0-2h1a2,2,0,0,1,2,2v4.75a.25.25,0,0,0,.25.25h.75a1,1,0,1,1,0,2Z"
+        ></path>
+      </svg>
+      <span class="text-blue-800">
+        There are currently no invoices associated with this customer. You can
+        add a new invoice by clicking the button above
+      </span>
+    </div>
+    <div v-else class="">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:xl:grid-cols-4 gap-6 p-"
+      >
+        <div
+          v-for="customer in customers"
+          :key="customer.id"
+          class="bg-white shadow-lg rounded-lg p-5 border border-gray-200"
+        >
+          <div class="bg-indigo-900 h-[140px] p-4 rounded-lg">
+            <h3 class="text-xl border-b pb-2 font-[500] text-white">
+              {{ customer.name }}
+            </h3>
+            <div class="mt-5">
+              <p class="text-gray-100 flex items-center gap-2 text-sm">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  class="h-[20px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M18 9V6M18 6V3M18 6H15M18 6H21M18.5 21C9.93959 21 3 14.0604 3 5.5C3 5.11378 3.01413 4.73086 3.04189 4.35173C3.07375 3.91662 3.08968 3.69907 3.2037 3.50103C3.29814 3.33701 3.4655 3.18146 3.63598 3.09925C3.84181 3 4.08188 3 4.56201 3H7.37932C7.78308 3 7.98496 3 8.15802 3.06645C8.31089 3.12515 8.44701 3.22049 8.55442 3.3441C8.67601 3.48403 8.745 3.67376 8.88299 4.05321L10.0491 7.26005C10.2096 7.70153 10.2899 7.92227 10.2763 8.1317C10.2643 8.31637 10.2012 8.49408 10.0942 8.64506C9.97286 8.81628 9.77145 8.93713 9.36863 9.17882L8 10C9.2019 12.6489 11.3501 14.7999 14 16L14.8212 14.6314C15.0629 14.2285 15.1837 14.0271 15.3549 13.9058C15.5059 13.7988 15.6836 13.7357 15.8683 13.7237C16.0777 13.7101 16.2985 13.7904 16.74 13.9509L19.9468 15.117C20.3262 15.255 20.516 15.324 20.6559 15.4456C20.7795 15.553 20.8749 15.6891 20.9335 15.842C21 16.015 21 16.2169 21 16.6207V19.438C21 19.9181 21 20.1582 20.9007 20.364C20.8185 20.5345 20.663 20.7019 20.499 20.7963C20.3009 20.9103 20.0834 20.9262 19.6483 20.9581C19.2691 20.9859 18.8862 21 18.5 21Z"
+                      stroke="#ffff"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </g>
+                </svg>
+                {{ customer.phone }}
+              </p>
+              <p class="text-gray-100 flex mt-3 items-center gap-2 text-sm">
+                <svg
+                  viewBox="0 0 8.4666669 8.4666669"
+                  id="svg8"
+                  class="h-[20px]"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:cc="http://creativecommons.org/ns#"
+                  xmlns:dc="http://purl.org/dc/elements/1.1/"
+                  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+                  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+                  xmlns:svg="http://www.w3.org/2000/svg"
+                  fill="#ffff"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <defs id="defs2"></defs>
+                    <g id="layer1" transform="translate(0,-288.53332)">
+                      <path
+                        d="m 4.2324219,288.79688 c -1.6042437,0 -2.9101556,1.30591 -2.9101563,2.91015 -10e-7,2.82277 2.7460938,4.96875 2.7460938,4.96875 a 0.26460978,0.26460978 0 0 0 0.3300781,0 c 0,0 2.7460996,-2.14598 2.7460937,-4.96875 -3.4e-6,-1.60424 -1.3078657,-2.91015 -2.9121093,-2.91015 z m 0,0.52929 c 1.3182605,0 2.3828097,1.0626 2.3828125,2.38086 4.8e-6,2.30926 -2.0910618,4.13374 -2.3808594,4.38086 -0.2884142,-0.24588 -2.3828134,-2.0707 -2.3828125,-4.38086 5e-7,-1.31826 1.0625988,-2.38086 2.3808594,-2.38086 z"
+                        id="path929"
+                      ></path>
+                      <path
+                        d="m 4.2324219,290.38477 c -0.7274912,0 -1.3222633,0.59477 -1.3222657,1.32226 -4.5e-6,0.7275 0.5947697,1.32422 1.3222657,1.32422 0.727496,0 1.3242233,-0.59672 1.3242187,-1.32422 -2.3e-6,-0.72749 -0.5967275,-1.32226 -1.3242187,-1.32226 z m 0,0.52929 c 0.4415089,0 0.7949204,0.35146 0.7949219,0.79297 2.7e-6,0.44151 -0.35341,0.79492 -0.7949219,0.79492 -0.441512,0 -0.7929715,-0.35341 -0.7929688,-0.79492 1.4e-6,-0.44151 0.3514598,-0.79297 0.7929688,-0.79297 z"
+                        id="circle931"
+                      ></path>
+                    </g>
+                  </g>
+                </svg>
+                {{ customer.address }}
+              </p>
+            </div>
+          </div>
 
-    <div class="overflow-x-auto">
+          <div class="mt-4">
+            <div class="text-gray-800 flex items-center gap-2 text-sm">
+              <p class="font-bold">Start Date :</p>
+              {{ customer.start_date }}
+            </div>
+
+            <div class="text-gray-800 flex mt-3 gap-2 text-sm">
+              <p class="font-bold">Free Trial: :</p>
+              {{ customer.free_trial }}
+            </div>
+            <div class="text-gray-800 grid mt-3 grid-cols-[auto,1fr] text-sm">
+              <p class="font-bold whitespace-nowrap">Note:</p>
+              <p class="break-words">{{ customer.note }}</p>
+            </div>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-3">
+            <button
+              @click="openModal(customer)"
+              class="bg-indigo-800 flex gap-2 text-white px-3 py-1 rounded-md text-sm hover:bg-indigo-700"
+            >
+              <svg
+                class="h-[15px]"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="#ffff"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <title></title>
+                  <g id="Complete">
+                    <g id="edit">
+                      <g>
+                        <path
+                          d="M20,16v4a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V6A2,2,0,0,1,4,4H8"
+                          fill="none"
+                          stroke="#ffff"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        ></path>
+                        <polygon
+                          fill="none"
+                          points="12.5 15.8 22 6.2 17.8 2 8.3 11.5 8 16 12.5 15.8"
+                          stroke="#ffff"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        ></polygon>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              Edit
+            </button>
+                <button
+              @click="confirmDelete(customer.id)"
+              class="bg-red-500 flex gap-1 items-center text-white px-3 py-1 rounded-md text-sm hover:bg-red-600"
+            >
+              <svg
+                viewBox="0 -0.5 21 21"
+                version="1.1"
+                class="h-[15px]"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                fill="#FF0000 "
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <title>delete [#1487]</title>
+                  <desc>Created with Sketch.</desc>
+                  <defs></defs>
+                  <g
+                    id="Page-1"
+                    stroke-width="0.00021000000000000004"
+                    fill="none"
+                    fill-rule="evenodd"
+                  >
+                    <g
+                      id="Dribbble-Light-Preview"
+                      transform="translate(-179.000000, -360.000000)"
+                      fill="#ffff"
+                    >
+                      <g
+                        id="icons"
+                        transform="translate(56.000000, 160.000000)"
+                      >
+                        <path
+                          d="M130.35,216 L132.45,216 L132.45,208 L130.35,208 L130.35,216 Z M134.55,216 L136.65,216 L136.65,208 L134.55,208 L134.55,216 Z M128.25,218 L138.75,218 L138.75,206 L128.25,206 L128.25,218 Z M130.35,204 L136.65,204 L136.65,202 L130.35,202 L130.35,204 Z M138.75,204 L138.75,200 L128.25,200 L128.25,204 L123,204 L123,206 L126.15,206 L126.15,220 L140.85,220 L140.85,206 L144,206 L144,204 L138.75,204 Z"
+                          id="delete-[#1487]"
+                        ></path>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              Delete
+            </button>
+            <button
+              @click="goToDetails(customer.id)"
+              class="bg-gray-300 text-gray-800 px-3 py-1 flex gap-2 items-center rounded-md text-sm hover:bg-gray-400"
+            >
+              <svg
+              class="h-[15px]"
+              
+                version="1.1"
+                id="_x32_"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 0 512 512"
+                xml:space="preserve"
+                fill="#000000"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                
+                  <g>
+                    <path
+                      class="st0"
+                      d="M255.366,141.046c-7.4,3.583-14.732,8.548-21.533,15.357c-34.091,34.098-65.081,65.088-65.081,65.088 l0.013,0.02c-0.185,0.186-0.371,0.338-0.557,0.53c-8.824,8.831-9.174,22.909-1.025,32.146c0.323,0.371,0.668,0.736,1.025,1.086 c9.161,9.174,24.036,9.196,33.232,0l35.797-35.797c6.176,2.263,12.248,3.583,18.074,4.243c7.937,0.88,15.392,0.55,22.022-0.385 c16.162-2.29,14.47-1.623,23.844-4.704c9.353-3.068,19.862-9.354,19.862-9.354l6.362,6.355 c0.701,0.681,16.919,16.925,25.192,25.185c1.465,1.471,2.709,2.682,3.542,3.549c0.956,0.997,2.022,1.719,2.682,2.682l41.278,41.279 c11.898-13.35,25.488-33.232,23.81-56.058L320.763,129.14C320.763,129.14,285.062,126.589,255.366,141.046z"
+                    ></path>
+                    <path
+                      class="st0"
+                      d="M261.115,394.362c-9.134-9.147-23.961-9.147-33.101,0l-6.794,6.794c9.119-9.132,9.112-23.926-0.021-33.066 c-9.14-9.126-23.947-9.126-33.087,0.007c9.14-9.133,9.14-23.94,0-33.087c-9.133-9.148-23.947-9.133-33.087,0 c9.14-9.133,9.14-23.947,0-33.095c-9.134-9.132-23.947-9.132-33.088,0.014l-20.46,20.453c-9.14,9.147-9.14,23.947,0,33.094 c9.133,9.134,23.941,9.134,33.08,0c-9.14,9.134-9.14,23.947,0,33.087c9.147,9.133,23.954,9.133,33.094,0 c-9.14,9.133-9.14,23.941,0,33.088c9.14,9.133,23.947,9.133,33.088,0l6.802-6.809c-9.119,9.147-9.113,23.94,0.02,33.081 c9.14,9.132,23.947,9.132,33.088,0l20.467-20.468C270.248,418.302,270.248,403.495,261.115,394.362z"
+                    ></path>
+                    <path
+                      class="st0"
+                      d="M507.987,178.28L387.543,57.822c-5.351-5.337-14.002-5.337-19.339,0l-38.631,38.63 c-5.337,5.337-5.337,13.989,0,19.333l120.458,120.451c5.33,5.35,13.996,5.35,19.326,0l38.63-38.638 C513.338,192.276,513.338,183.624,507.987,178.28z M473.655,204.992c-5.75,5.736-15.048,5.736-20.777,0 c-5.735-5.743-5.735-15.041,0-20.777c5.729-5.736,15.027-5.736,20.777,0C479.391,189.951,479.384,199.249,473.655,204.992z"
+                    ></path>
+                    <path
+                      class="st0"
+                      d="M182.417,99.864l-38.624-38.63c-5.336-5.337-13.995-5.337-19.332,0L4.003,181.691 c-5.337,5.323-5.337,13.989,0,19.319l38.631,38.644c5.33,5.331,14.002,5.331,19.325,0l120.458-120.458 C187.761,113.859,187.761,105.207,182.417,99.864z M59.118,208.403c-5.736,5.729-15.04,5.729-20.777,0 c-5.735-5.742-5.735-15.041,0-20.777c5.736-5.735,15.041-5.735,20.777,0C64.854,193.362,64.854,202.66,59.118,208.403z"
+                    ></path>
+                    <path
+                      class="st0"
+                      d="M397.528,312.809l-7.468-7.482l-72.509-72.509l-4.883,2.166l-5.316,1.919l-0.384,0.117 c-0.936,0.296-9.684,2.971-26.932,5.412c-9.12,1.273-18.156,1.431-26.904,0.434c-3.459-0.385-6.898-0.95-10.296-1.692 l-27.757,27.744c-16.678,16.678-43.836,16.678-60.514,0c-0.585-0.591-1.149-1.19-1.671-1.781l-0.179-0.2 c-10.529-11.939-13.204-28.28-8.252-42.461l10.673-16.609l-0.02-0.02l65.081-65.074c2.647-2.641,5.426-5.103,8.314-7.428 c-20.281-3.982-37.296-2.806-37.296-2.806L88.093,235.679c-1.389,18.988,11.651,39.799,20.928,51.952 c16.692-15.963,43.239-15.756,59.641,0.654c6.107,6.1,9.952,13.617,11.574,21.498c7.895,1.637,15.406,5.475,21.513,11.582 c6.107,6.114,9.952,13.631,11.575,21.519c7.888,1.623,15.412,5.46,21.513,11.568c4.078,4.078,7.152,8.783,9.222,13.817 c11.1-0.137,22.242,4.016,30.688,12.455c16.65,16.636,16.643,43.733,0,60.363l-6.809,6.822l3.411,3.412 c9.148,9.147,23.954,9.147,33.095,0c9.14-9.134,9.14-23.947,0-33.088l6.808,6.83c9.147,9.133,23.947,9.133,33.087,0 c9.14-9.147,9.147-23.954,0-33.101c9.147,9.147,23.947,9.147,33.087,0c9.134-9.126,9.154-23.94,0-33.088 c9.154,9.148,23.954,9.148,33.088,0c9.147-9.132,9.147-23.947,0-33.08L397.528,312.809z"
+                    ></path>
+                  </g>
+                </g>
+              </svg>
+              Contracts
+            </button>
+            <button
+              @click="goToInvoice(customer.id)"
+              class="bg-green-500 text-white px-3 py-1 flex items-center gap-2 rounded-md text-sm hover:bg-green-600"
+            >
+              <svg
+              class="h-[21px]"
+                fill="#fff"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 100 100"
+                xml:space="preserve"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <g>
+                    <g>
+                      <path
+                        d="M74.6,33.6L61.4,20.4c-0.3-0.3-0.6-0.4-1-0.4h0c-0.8,0-1.4,0.6-1.4,1.4V32c0,2.2,1.8,4,4,4h10.6 c0.8,0,1.4-0.6,1.4-1.4v0C75,34.2,74.9,33.9,74.6,33.6z"
+                      ></path>
+                    </g>
+                    <g>
+                      <path
+                        d="M73,42H59c-3.3,0-6-2.7-6-6V22c0-1.1-0.9-2-2-2H31c-3.3,0-6,2.7-6,6v48c0,3.3,2.7,6,6,6h38c3.3,0,6-2.7,6-6 V44C75,42.9,74.1,42,73,42z M32,32.6l4.9-0.7c0.1,0,0.3-0.1,0.3-0.2l2.2-4.5c0.2-0.3,0.6-0.3,0.8,0l2.2,4.5 c0.1,0.1,0.2,0.2,0.3,0.2l4.9,0.7c0.3,0.1,0.5,0.5,0.2,0.7l-3.6,3.5c-0.1,0.1-0.1,0.2-0.1,0.4l0.8,4.9c0.1,0.3-0.3,0.6-0.6,0.4 l-4.4-2.3c-0.1-0.1-0.3-0.1-0.4,0l-4.4,2.3c-0.3,0.2-0.7-0.1-0.6-0.4l0.8-4.9c0-0.1,0-0.3-0.1-0.4l-3.6-3.5 C31.5,33.1,31.7,32.7,32,32.6z M63,66c0,1.1-0.9,2-2,2H35c-1.1,0-2-0.9-2-2v-2c0-1.1,0.9-2,2-2h26c1.1,0,2,0.9,2,2V66z M67,54 c0,1.1-0.9,2-2,2H35c-1.1,0-2-0.9-2-2v-2c0-1.1,0.9-2,2-2h30c1.1,0,2,0.9,2,2V54z"
+                      ></path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              Invoice
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="overflow-x-auto">
       <table
         class="w-full border border-gray-300 bg-white rounded-lg overflow-hidden"
       >
@@ -27,8 +318,8 @@
             <th class="p-4">Name</th>
             <th class="p-4">Phone</th>
             <th class="p-4">Address</th>
-            <th class="p-4">start_date</th>
-            <th class="p-4">free_trial</th>
+            <th class="p-4">start Date</th>
+            <th class="p-4">free trial</th>
             <th class="p-4">note</th>
 
             <th class="p-4 text-center">Actions</th>
@@ -49,7 +340,7 @@
             <td class="p-4 text-gray-700">{{ customer.note }}</td>
 
             <td class="p-4 flex justify-center gap-2">
-              <div class="flex">
+              <div class="flex  w-[160px] ">
                 <button
                   @click="openModal(customer)"
                   class="p-2 rounded-full group transition-all duration-500 flex item-center"
@@ -104,7 +395,7 @@
                   class="p-2 cursor-pointer rounded-full group transition-all duration-500 flex item-center"
                 >
                   <img
-                    class="h-[21px]  mt-[-1px]"
+                    class="h-[21px] mt-[-1px]"
                     src="/src/assets/invoice-instead-line-svgrepo-com.svg"
                     alt=""
                   />
@@ -114,29 +405,31 @@
           </tr>
         </tbody>
       </table>
-    </div>
+    </div> -->
 
-    <!-- Pagination Controls -->
-    <div class="flex justify-between items-center mt-4">
-      <button
-        @click="fetchCustomers(pagination.current_page - 1)"
-        :disabled="pagination.current_page === 1"
-        class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-      >
-        Previous
-      </button>
+      <!-- Pagination Controls -->
+      <div class="flex justify-between items-center mt-4">
+        <button
+          @click="fetchCustomers(pagination.current_page - 1)"
+          :disabled="pagination.current_page === 1"
+          class="px-4 py-2 cursor-pointer bg-gray-300 rounded disabled:opacity-50"
+        >
+          Previous
+        </button>
 
-      <span
-        >Page {{ pagination.current_page }} of {{ pagination.last_page }}</span
-      >
+        <span
+          >Page {{ pagination.current_page }} of
+          {{ pagination.last_page }}</span
+        >
 
-      <button
-        @click="fetchCustomers(pagination.current_page + 1)"
-        :disabled="pagination.current_page >= pagination.last_page"
-        class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-      >
-        Next
-      </button>
+        <button
+          @click="fetchCustomers(pagination.current_page + 1)"
+          :disabled="pagination.current_page >= pagination.last_page"
+          class="px-4 py-2 bg-gray-300 cursor-pointer rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
 
     <!-- Add/Edit Modal -->
@@ -146,7 +439,7 @@
       @click.self="closeModal"
     >
       <div
-        class="bg-white p-6 mt-[100px]  rounded-2xl shadow-xl max-w-md w-full transform scale-95 border border-gray-200"
+        class="bg-white p-6 mt-[100px] rounded-2xl shadow-xl max-w-md w-full transform scale-95 border border-gray-200"
       >
         <div class="flex justify-between items-center border-b pb-3 mb-3">
           <h2 class="text-xl font-semibold text-gray-800">
@@ -161,66 +454,66 @@
         </div>
 
         <form class="space-y-4">
-        <div class="flex gap-3">
-
+          <div class="flex gap-3">
             <!-- Name Input -->
             <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Name</label
-            >
-            <input
-              v-model="form.name"
-              type="text"
-              placeholder="Enter name"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
-          </div>
+              <label class="block text-gray-600 text-sm font-medium mb-1"
+                >Name</label
+              >
+              <input
+                v-model="form.name"
+                type="text"
+                placeholder="Enter name"
+                class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+                required
+              />
+            </div>
 
-          <!-- Phone Input -->
-          <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Phone</label
-            >
-            <input
-              v-model="form.phone"
-              type="tel"
-              placeholder="Enter phone number"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-
-
-            <!-- Address Input -->
+            <!-- Phone Input -->
             <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Address</label
-            >
-            <input
-              v-model="form.address"
-              type="text"
-              placeholder="Enter address"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
+              <label class="block text-gray-600 text-sm font-medium mb-1"
+                >Phone</label
+              >
+              <input
+                v-model="form.phone"
+                type="tel"
+                placeholder="Enter phone number"
+                class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+                required
+              />
+            </div>
           </div>
+
+          <div class="flex w-full gap-3">
+            <!-- Address Input -->
+            <div class="flex-1">
+              <label class="block text-gray-600 text-sm font-medium mb-1"
+                >Address</label
+              >
+              <input
+                v-model="form.address"
+                type="text"
+                placeholder="Enter address"
+                class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+                required
+              />
+            </div>
+            <!-- Start Date Input -->
+            <div class="flex-1">
+              <label class="block text-gray-600 text-sm font-medium mb-1"
+                >Start Date</label
+              >
+              <input
+                v-model="form.start_date"
+                type="date"
+                placeholder="Enter date"
+                class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+                required
+              />
+            </div>
+          </div>
+
           <div>
-            <label class="block text-gray-600 text-sm font-medium mb-1"
-              >Start Date</label
-            >
-            <input
-              v-model="form.start_date"
-              type="date"
-              placeholder="Enter name"
-              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-              required
-            />
-          </div>
-        </div> <div>
             <label class="block text-gray-600 text-sm font-medium mb-1"
               >Free Trial</label
             >
@@ -285,12 +578,12 @@
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
       <div class="relative p-4 w-full max-w-md">
-        <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow-lg">
           <!-- Close Button -->
           <button
             @click="deleteModalOpen = false"
             type="button"
-            class="absolute top-3 end-2.5 text-gray-400 bg-transparent flex justify-center items-center hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 dark:hover:bg-gray-600 dark:hover:text-white"
+            class="absolute top-3 end-2.5 text-gray-400 bg-transparent flex justify-center items-center hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8"
           >
             <svg
               class="w-3 h-3"
@@ -313,7 +606,7 @@
           <!-- Modal Content -->
           <div class="p-4 md:p-5 text-center">
             <svg
-              class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
+              class="mx-auto mb-4 text-gray-400 w-12 h-12"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -327,15 +620,13 @@
                 d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
               />
             </svg>
-            <h3
-              class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
-            >
+            <h3 class="mb-5 text-lg font-normal text-gray-500">
               Are you sure you want to delete this customer?
             </h3>
             <button
               @click="deleteCustomer"
               type="button"
-              class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
+              class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
             >
               <svg
                 v-if="loading"
@@ -357,7 +648,7 @@
             <button
               @click="deleteModalOpen = false"
               type="button"
-              class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+              class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100"
             >
               No, cancel
             </button>
@@ -416,10 +707,6 @@ export default {
     const userName = ref(null);
 
     const fetchUser = async () => {
-      if (!token) {
-        console.error("JWT token not found in cookies!");
-        return;
-      }
       try {
         const response = await axios.get("/user", {
           headers: { Authorization: `Bearer ${token}` },
@@ -479,20 +766,29 @@ export default {
     const saveCustomer = async () => {
       loading.value = true;
       try {
-        if (form.value.id) {
-          await axios.put(
-            `${API_URL}/customers/${form.value.id}`,
-            form.value
-          );
-          toast.success("Customer updated successfully!");
+        // if user  not loged in  show error
+        if (!userName.value) {
+          swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please log in to continue",
+            footer: '<a href="/login">Need access? Log in here</a>',
+          });
         } else {
-          await axios.post(`${API_URL}/customers`, form.value);
-          toast.success("Customer added successfully!");
+          if (form.value.id) {
+            await axios.put(
+              `${API_URL}/customers/${form.value.id}`,
+              form.value
+            );
+            toast.success("Customer updated successfully!");
+          } else {
+            await axios.post(`${API_URL}/customers`, form.value);
+            toast.success("Customer added successfully!");
+          }
+          closeModal();
+          fetchUserAndCustomers();
         }
-        closeModal();
-        fetchCustomers();
       } catch (error) {
-        console.error("Error saving customer:", error);
         toast.error("Error saving customer!");
       } finally {
         loading.value = false;
@@ -507,12 +803,20 @@ export default {
     const deleteCustomer = async () => {
       loading.value = true;
       try {
-        await axios.delete(
-          `${API_URL}/customers/${deleteId.value}`
-        );
-        deleteModalOpen.value = false;
-        fetchCustomers();
-        toast.success("Customer deleted successfully!");
+        // if user  not loged in  show error
+        if (!userName.value) {
+          swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please log in to continue",
+            footer: '<a href="/login">Need access? Log in here</a>',
+          });
+        } else {
+          await axios.delete(`${API_URL}/customers/${deleteId.value}`);
+          deleteModalOpen.value = false;
+          fetchUserAndCustomers();
+          toast.success("Customer deleted successfully!");
+        }
       } catch (error) {
         console.error("Error deleting customer:", error);
         toast.error("Error deleting customer!");

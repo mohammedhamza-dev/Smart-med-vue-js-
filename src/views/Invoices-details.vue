@@ -71,7 +71,7 @@
                 {{ item.subtotal }}
               </td>
               <td class="p-4 text-gray-700">{{ item.note || "No note" }}</td>
-              <td class="p-4 flex justify-center gap-2">
+              <td class="p-4   w-[160px] flex justify-center gap-2">
                 <button
                   @click="openModal(item)"
                   class="p-2 rounded-full group transition-all duration-500 flex item-center"
@@ -116,11 +116,11 @@
         </table>
       </div>
       <!-- Pagination Controls -->
-      <div v-if="invoiceItems.length>9" class="flex justify-between items-center mt-4">
+      <div  class="flex justify-between items-center mt-4">
         <button
           @click="fetchInvoiceItems(currentPage - 1)"
           :disabled="currentPage === 1"
-          class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:bg-gray-200"
+          class="px-4 py-2 bg-indigo-800 text-white rounded-lg hover:bg-indigo-700 cursor-pointer active:bg-indigo-900 disabled:bg-indigo-900/20 disabled:text-black"
         >
           Previous
         </button>
@@ -132,7 +132,7 @@
         <button
           @click="fetchInvoiceItems(currentPage + 1)"
           :disabled="currentPage === lastPage"
-          class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:bg-gray-200"
+          class="px-4 py-2 bg-indigo-800 text-white rounded-lg hover:bg-indigo-700 cursor-pointer active:bg-indigo-900 disabled:bg-indigo-900/20 disabled:text-black"
         >
           Next
         </button>
@@ -146,12 +146,12 @@
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
       <div class="relative p-4 w-full max-w-md">
-        <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow-lg ">
           <!-- Close Button -->
           <button
             @click="deleteModalOpen = false"
             type="button"
-            class="absolute top-3 end-2.5 text-gray-400 bg-transparent flex justify-center items-center hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 dark:hover:bg-gray-600 dark:hover:text-white"
+            class="absolute top-3 end-2.5 text-gray-400 bg-transparent flex justify-center items-center hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8"
           >
             <svg
               class="w-3 h-3"
@@ -174,7 +174,7 @@
           <!-- Modal Content -->
           <div class="p-4 md:p-5 text-center">
             <svg
-              class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
+              class="mx-auto mb-4 text-gray-400 w-12 h-12 "
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -189,14 +189,14 @@
               />
             </svg>
             <h3
-              class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
+              class="mb-5 text-lg font-normal text-gray-500 "
             >
               Are you sure you want to delete this Invoice Item?
             </h3>
             <button
               @click="deleteInvoice"
               type="button"
-              class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
+              class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
             >
               <svg
                 v-if="loading"
@@ -218,7 +218,7 @@
             <button
               @click="deleteModalOpen = false"
               type="button"
-              class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+              class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100 "
             >
               No, cancel
             </button>
@@ -233,7 +233,7 @@
       class="fixed inset-0 bg-black/50 max-h-screen overflow-y-auto py-[40px] flex items-center justify-center"
     >
       <div
-        class="bg-white p-6 mt-[250px] mx-4 rounded-2xl shadow-xl max-w-md w-full"
+        class="bg-white p-6 mt-[80px] mx-4 rounded-2xl shadow-xl max-w-md w-full"
       >
         <div class="flex justify-between items-center border-b pb-3 mb-3">
           <h2 class="text-xl font-semibold text-gray-800">
@@ -249,6 +249,8 @@
 
         <form @submit.prevent="saveInvoiceItem">
           <div class="space-y-4">
+           <div class="flex gap-2">
+
             <div>
               <label class="block text-gray-600 text-sm font-medium mb-1"
                 >Item Name</label
@@ -271,6 +273,8 @@
                 class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
               />
             </div>
+           </div>
+           <div class="flex gap-2">
             <div>
               <label class="block text-gray-600 text-sm font-medium mb-1"
                 >Quantity</label
@@ -293,6 +297,7 @@
                 class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
               />
             </div>
+           </div>
             <div>
               <label class="block text-gray-600 text-sm font-medium mb-1"
                 >Note</label
@@ -344,8 +349,10 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
 import { useToast } from "vue-toastification";
+import VueCookies from "vue-cookies"; // Import vue-cookies
 
-axios.defaults.baseURL = "http://localhost:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
+axios.defaults.baseURL = API_URL;
 
 export default {
   setup() {
@@ -360,6 +367,24 @@ export default {
     const deleteId = ref(null); // Add this
     const currentPage = ref(1);
     const lastPage = ref(1);
+    const userName = ref(null);
+    const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
+
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        userName.value = response.data.name;
+
+        // Set created_by when fetching user
+        form.value.created_by = userId.value;
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
 
     const fetchInvoiceItems = async (page = 1) => {
       getDataLoading.value = true;
@@ -408,7 +433,17 @@ export default {
     const saveInvoiceItem = async () => {
       loading.value = true;
       try {
-        if (form.value.id) {
+        if (!userName.value) {
+          swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please log in to continue",
+            footer: '<a href="/login">Need access? Log in here</a>',
+          });
+        } 
+
+        else{
+          if (form.value.id) {
           await axios.put(`/invoice-items/${form.value.id}`, form.value);
           toast.success("invoice updated successfully!");
         } else {
@@ -417,8 +452,12 @@ export default {
         }
         fetchInvoiceItems();
         closeModal();
+
+        }
+ 
       } catch (error) {
-        console.error("Error saving invoice item:", error);
+        toast.error("Error saving invoice item");
+
       } finally {
         loading.value = false;
       }
@@ -431,17 +470,32 @@ export default {
     const deleteInvoice = async () => {
       loading.value = true;
       try {
-        await axios.delete(`/invoice-items/${deleteId.value}`);
+        if (!userName.value) {
+          swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please log in to continue",
+            footer: '<a href="/login">Need access? Log in here</a>',
+          });
+        } 
+
+        else{
+          await axios.delete(`/invoice-items/${deleteId.value}`);
         deleteModalOpen.value = false;
         fetchInvoiceItems();
+        toast.success("invoice Deleted successfully!");
+
+        }
+      
       } catch (error) {
-        console.error("Error deleting invoice:", error);
+        toast.error("Error Deleting invoice item");
       } finally {
         loading.value = false;
       }
     };
     onMounted(() => {
-      fetchInvoiceItems();
+      fetchInvoiceItems()
+      fetchUser()
     });
 
     return {
@@ -460,6 +514,7 @@ export default {
       closeModal,
       saveInvoiceItem,
       fetchInvoiceItems,
+      
     };
   },
   components: { Loading },

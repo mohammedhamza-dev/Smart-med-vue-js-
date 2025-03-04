@@ -1,16 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Customers from '../views/Customers.vue';
-import Contracts from '../views/Contracts.vue';
 import Invoices from '../views/Invoices-details.vue';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import Customer_details from '../views/Customer-details.vue';
 import InvoiceList from '../views/InvoiceList.vue';
 import invoice_details from '../views/Invoices-details.vue';
+import Home from '../views/home.vue';
 
 const routes = [
-    { path: '/', component: Customers },
-    { path: '/contracts', component: Contracts },
+    { path: '/Customers', component: Customers },
+    { path: '/', component: Home },
+
     { path: '/login', component: Login },
     { path: '/register', component: Register },
     { path: '/invoices/:customer_id', component: InvoiceList, props: true },

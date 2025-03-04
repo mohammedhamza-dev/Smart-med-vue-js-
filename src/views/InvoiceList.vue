@@ -77,7 +77,7 @@
               <!-- Delete Confirmation Modal -->
               <div
                 v-if="deleteModalOpen"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/5 "
               >
                 <div class="relative p-4 w-full max-w-md">
                   <div class="relative bg-white rounded-lg shadow-lg">
@@ -96,7 +96,7 @@
                       <button
                         @click="deleteInvoice"
                         type="button"
-                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
+                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
                       >
                         <svg
                           v-if="loading"
@@ -134,7 +134,7 @@
                   </div>
                 </div>
               </div>
-              <td class="p-4 flex justify-center gap-2">
+              <td class="p-4 flex  w-[160px] justify-center gap-2">
                 <button
                   @click="openModal(invoice)"
                   class="p-2 rounded-full group transition-all duration-500 flex item-center"
@@ -194,7 +194,7 @@
         <button
           @click="fetchInvoices(currentPage - 1)"
           :disabled="currentPage === 1"
-          class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:bg-gray-200"
+          class="px-4 py-2 bg-indigo-800 text-white rounded-lg hover:bg-indigo-700 cursor-pointer active:bg-indigo-900 disabled:bg-indigo-900/20 disabled:text-black"
         >
           Previous
         </button>
@@ -206,7 +206,7 @@
         <button
           @click="fetchInvoices(currentPage + 1)"
           :disabled="currentPage === lastPage"
-          class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:bg-gray-200"
+          class="px-4 py-2 bg-indigo-800 text-white rounded-lg hover:bg-indigo-700 cursor-pointer active:bg-indigo-900 disabled:bg-indigo-900/20 disabled:text-black"
         >
           Next
         </button>
@@ -216,7 +216,7 @@
     <!-- Add/Edit Invoice Modal -->
     <div
       v-if="isModalOpen"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center"
+      class="fixed inset-0 bg-black/50 px-4 flex items-center justify-center"
     >
       <div class="bg-white p-6 rounded-2xl shadow-xl max-w-md w-full">
         <div class="flex justify-between items-center border-b pb-3 mb-3">
@@ -293,8 +293,10 @@ import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
 import { useRouter } from "vue-router";
 import VueCookies from "vue-cookies"; // Import vue-cookies
+import { useToast } from "vue-toastification";
 
-axios.defaults.baseURL = "http://localhost:8000/api";
+const API_URL = import.meta.env.VITE_API_URL;
+axios.defaults.baseURL = API_URL;
 
 export default {
   setup() {
@@ -314,6 +316,8 @@ export default {
     const userId = ref(null);
     const userName = ref(null);
     const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
+    const toast = useToast();
+
     const form = ref({
       customer_id: customerId.value,
       invoice_date: "",
@@ -322,13 +326,8 @@ export default {
     });
 
     const fetchUser = async () => {
-      if (!token) {
-        console.error("JWT token not found in cookies!");
-        return;
-      }
-
       try {
-        const response = await axios.get("http://localhost:8000/api/user", {
+        const response = await axios.get(`/user`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -341,6 +340,7 @@ export default {
         console.error("Error fetching user:", error);
       }
     };
+
     const goToInvoiceDetails = (invoiceId) => {
       router.push(`/invoices-details/${invoiceId}`);
     };
@@ -385,13 +385,26 @@ export default {
     const saveInvoice = async () => {
       loading.value = true;
       try {
-        if (form.value.id) {
-          await axios.put(`/invoices/${form.value.id}`, form.value);
+        if (!userName.value) {
+          swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please log in to continue",
+            footer: '<a href="/login">Need access? Log in here</a>',
+          });
         } else {
-          await axios.post("/invoices", form.value);
+          if (form.value.id) {
+            await axios.put(`/invoices/${form.value.id}`, form.value);
+            toast.success("invoice updated successfully!");
+
+          } else {
+            await axios.post("/invoices", form.value);
+            toast.success("invoice added successfully!");
+
+          }
+          fetchInvoices();
+          closeModal();
         }
-        fetchInvoices();
-        closeModal();
       } catch (error) {
         console.error("Error saving invoice:", error);
       } finally {
@@ -407,9 +420,20 @@ export default {
     const deleteInvoice = async () => {
       loading.value = true;
       try {
-        await axios.delete(`/invoices/${deleteId.value}`);
-        deleteModalOpen.value = false;
-        fetchInvoices();
+        if (!userName.value) {
+          swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please log in to continue",
+            footer: '<a href="/login">Need access? Log in here</a>',
+          });
+        } else {
+          await axios.delete(`/invoices/${deleteId.value}`);
+          deleteModalOpen.value = false;
+          fetchInvoices();
+          toast.success("invoice Deleted successfully!");
+
+        }
       } catch (error) {
         console.error("Error deleting invoice:", error);
       } finally {
