@@ -3,6 +3,11 @@
     <Loading />
   </div>
 
+
+ <div v-else>
+  <div v-if="customerId_error">
+ <Error/>
+    </div>
   <div v-else class="p-4 max-w-[1300px] mt-[100px] mx-auto">
     <h1 class="text-3xl font-semibold mb-4">
       Invoice Items for Invoice #{{ invoiceId }}
@@ -341,6 +346,7 @@
       </div>
     </div>
   </div>
+ </div>
 </template>
 
 <script>
@@ -350,6 +356,8 @@ import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
 import { useToast } from "vue-toastification";
 import VueCookies from "vue-cookies"; // Import vue-cookies
+import { useUserStore } from "../store/userStore";
+import Error from "./error.vue";
 
 const API_URL = import.meta.env.VITE_API_URL;
 axios.defaults.baseURL = API_URL;
@@ -358,6 +366,8 @@ export default {
   setup() {
     const route = useRoute();
     const invoiceId = ref(route.params.invoice_id);
+    const customerId_error = ref(false);
+
     const invoiceItems = ref([]);
     const loading = ref(false);
     const isModalOpen = ref(false);
@@ -369,26 +379,18 @@ export default {
     const lastPage = ref(1);
     const userName = ref(null);
     const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
+  // Get User Store (Pinia)
+  const userStore = useUserStore();
+    const user = userStore.user;
 
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(`/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        userName.value = response.data.name;
-
-        // Set created_by when fetching user
-        form.value.created_by = userId.value;
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
+   
 
 
     const fetchInvoiceItems = async (page = 1) => {
       getDataLoading.value = true;
       try {
+        await userStore.fetchUser(); // Fetch user first
+     
         const response = await axios.get(
           `/invoice-items/invoice/${invoiceId.value}?page=${page}`
         );
@@ -397,7 +399,7 @@ export default {
         currentPage.value = response.data.current_page; // Current page
         lastPage.value = response.data.last_page; // Last page
       } catch (error) {
-        console.error("Error fetching invoice items:", error);
+        customerId_error.value = true;
       } finally {
         getDataLoading.value = false;
       }
@@ -433,7 +435,7 @@ export default {
     const saveInvoiceItem = async () => {
       loading.value = true;
       try {
-        if (!userName.value) {
+        if (!userStore.user) {
           swal.fire({
             icon: "error",
             title: "Oops...",
@@ -470,7 +472,7 @@ export default {
     const deleteInvoice = async () => {
       loading.value = true;
       try {
-        if (!userName.value) {
+        if (!userStore.user) {
           swal.fire({
             icon: "error",
             title: "Oops...",
@@ -495,7 +497,6 @@ export default {
     };
     onMounted(() => {
       fetchInvoiceItems()
-      fetchUser()
     });
 
     return {
@@ -514,9 +515,11 @@ export default {
       closeModal,
       saveInvoiceItem,
       fetchInvoiceItems,
+      getDataLoading,
+      customerId_error
       
     };
   },
-  components: { Loading },
+  components: { Loading,Error },
 };
 </script>

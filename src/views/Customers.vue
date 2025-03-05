@@ -5,7 +5,7 @@
 
   <div v-else class="p-3 2xl:max-w-[1800px] max-w-[1300px] mt-[100px] mx-auto">
     <h1 class="md:text-3xl text-2xl font-[500] mb-[20px]">
-      Welcome , <span class="text-indigo-700">{{ userName || "User" }}</span>
+      Welcome , <span class="text-indigo-700">{{ user_data || "User" }}</span>
     </h1>
 
     <!-- Add Customer Button -->
@@ -44,8 +44,18 @@
           class="bg-white shadow-lg rounded-lg p-5 border border-gray-200"
         >
           <div class="bg-indigo-900 h-[140px] p-4 rounded-lg">
-            <h3 class="text-xl border-b pb-2 font-[500] text-white">
-              {{ customer.name }}
+            <h3
+              class="text-xl border-b flex gap-2 items-center justify-between pb-2 font-[500] text-white"
+            >
+              <h1>{{ customer.name }}</h1>
+              <!-- Redirect to Contract Page -->
+
+              <p
+                class="text-sm cursor-pointer"
+                @click="$router.push(`/customer-details/${customer.id}`)"
+              >
+                Show Details >
+              </p>
             </h3>
             <div class="mt-5">
               <p class="text-gray-100 flex items-center gap-2 text-sm">
@@ -114,19 +124,19 @@
           </div>
 
           <div class="mt-4">
-            <div class="text-gray-800 flex items-center gap-2 text-sm">
-              <p class="font-bold">Start Date :</p>
+            <div class="text-gray-800 flex items-center gap-2 text-md">
+              <p class="font-[600]">Start Date :</p>
               {{ customer.start_date }}
             </div>
 
-            <div class="text-gray-800 flex mt-3 gap-2 text-sm">
-              <p class="font-bold">Free Trial: :</p>
+            <div class="text-gray-800 flex mt-1 gap-2 text-md">
+              <p class="font-[600]">Free Trial: :</p>
               {{ customer.free_trial }}
             </div>
-            <div class="text-gray-800 grid mt-3 grid-cols-[auto,1fr] text-sm">
-              <p class="font-bold whitespace-nowrap">Note:</p>
+            <!-- <div class="text-gray-800 grid mt-1 grid-cols-[auto,1fr] text-md">
+              <p class="font-[600] whitespace-nowrap">Note:</p>
               <p class="break-words">{{ customer.note }}</p>
-            </div>
+            </div> -->
           </div>
           <div class="mt-4 flex flex-wrap gap-3">
             <button
@@ -173,7 +183,7 @@
               </svg>
               Edit
             </button>
-                <button
+            <button
               @click="confirmDelete(customer.id)"
               class="bg-red-500 flex gap-1 items-center text-white px-3 py-1 rounded-md text-sm hover:bg-red-600"
             >
@@ -226,8 +236,7 @@
               class="bg-gray-300 text-gray-800 px-3 py-1 flex gap-2 items-center rounded-md text-sm hover:bg-gray-400"
             >
               <svg
-              class="h-[15px]"
-              
+                class="h-[15px]"
                 version="1.1"
                 id="_x32_"
                 xmlns="http://www.w3.org/2000/svg"
@@ -243,7 +252,6 @@
                   stroke-linejoin="round"
                 ></g>
                 <g id="SVGRepo_iconCarrier">
-                
                   <g>
                     <path
                       class="st0"
@@ -275,7 +283,7 @@
               class="bg-green-500 text-white px-3 py-1 flex items-center gap-2 rounded-md text-sm hover:bg-green-600"
             >
               <svg
-              class="h-[21px]"
+                class="h-[21px]"
                 fill="#fff"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 100 100"
@@ -412,7 +420,7 @@
         <button
           @click="fetchCustomers(pagination.current_page - 1)"
           :disabled="pagination.current_page === 1"
-          class="px-4 py-2 cursor-pointer bg-gray-300 rounded disabled:opacity-50"
+          class="px-4 py-2 bg-indigo-800 text-white rounded-lg hover:bg-indigo-700 cursor-pointer active:bg-indigo-900 disabled:bg-indigo-900/20 disabled:text-black"
         >
           Previous
         </button>
@@ -425,7 +433,7 @@
         <button
           @click="fetchCustomers(pagination.current_page + 1)"
           :disabled="pagination.current_page >= pagination.last_page"
-          class="px-4 py-2 bg-gray-300 cursor-pointer rounded disabled:opacity-50"
+          class="px-4 py-2 bg-indigo-800 text-white rounded-lg hover:bg-indigo-700 cursor-pointer active:bg-indigo-900 disabled:bg-indigo-900/20 disabled:text-black"
         >
           Next
         </button>
@@ -517,13 +525,19 @@
             <label class="block text-gray-600 text-sm font-medium mb-1"
               >Free Trial</label
             >
-            <input
+            <select
               v-model="form.free_trial"
               type="text"
-              placeholder="Enter name"
+              placeholder="Select Please"
               class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
               required
-            />
+            >
+
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+
+          
+          </select>
           </div>
           <div>
             <label class="block text-gray-600 text-sm font-medium mb-1"
@@ -660,12 +674,13 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import { useToast } from "vue-toastification";
 import Loading from "../components/Loading.vue";
 import { useRouter } from "vue-router";
-import VueCookies from "vue-cookies"; // Import vue-cookies
+import { useUserStore } from "../store/userStore";
+import { computed } from "vue";
 
 export default {
   setup() {
@@ -676,86 +691,81 @@ export default {
       total: 0,
       last_page: 1,
     });
+
     const router = useRouter();
     const API_URL = import.meta.env.VITE_API_URL;
-    const goToDetails = (id) => {
-      router.push(`/Customer-details/${id}`);
-    };
-    const goToInvoice = (id) => {
-      router.push(`/invoices/${id}`);
-    };
+    const toast = useToast();
+
+    const goToDetails = (id) => router.push(`/Contracts/${id}`);
+    const goToInvoice = (id) => router.push(`/invoices/${id}`);
 
     const isModalOpen = ref(false);
     const deleteModalOpen = ref(false);
     const loading = ref(false);
     const getDataLoading = ref(true);
 
+    // Get User Store (Pinia)
+    const userStore = useUserStore();
+    const user_data = computed(() => userStore.user?.name || "User");
+
+    
     const form = ref({
       id: null,
       name: "",
       start_date: "",
       free_trial: "",
       note: "",
-
       phone: "",
       address: "",
-      created_by: 1,
+      created_by: null,
     });
+
     const deleteId = ref(null);
-    const toast = useToast();
-    const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
-    const userName = ref(null);
 
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get("/user", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        userName.value = response.data.name;
-
-        // Set created_by when fetching user
-        form.value.created_by = userId.value;
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-
+    /**
+     * Fetch customers after user data is loaded.
+     */
     const fetchCustomers = async (page = 1) => {
+      getDataLoading.value = true;
       try {
-        const { data } = await axios.get(
-          `${API_URL}/customers?page=${page}&per_page=${pagination.value.per_page}`
+        await userStore.fetchUser(); // Fetch user first
+        if (userStore.user) {
+          form.value.created_by = userStore.user.id; // Set created_by
+        }
+        const response = await axios.get(
+          `${API_URL}/customers?page=${page}&per_page=${pagination.value.per_page}`,
+          { headers: { Authorization: `Bearer ${userStore.user?.token}` } }
         );
-        customers.value = data.data;
+
+        customers.value = response.data.data;
         pagination.value = {
-          current_page: data.current_page,
-          per_page: data.per_page,
-          total: data.total,
-          last_page: data.last_page,
+          current_page: response.data.current_page,
+          per_page: response.data.per_page,
+          total: response.data.total,
+          last_page: response.data.last_page,
         };
       } catch (error) {
         console.error("Error fetching customers:", error);
-      }
-    };
-    //for  get user and   fetchCustomers then  loading be false
-    const fetchUserAndCustomers = async () => {
-      getDataLoading.value = true; // Start loading
-      try {
-        await Promise.all([fetchUser(), fetchCustomers()]); // Fetch both user and customers
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        toast.error("Error fetching customers.");
       } finally {
-        getDataLoading.value = false; // Set loading to false after both finish
+        getDataLoading.value = false;
       }
     };
 
-    // Call this instead of fetchCustomers() and fetchUser() separately
-    fetchUserAndCustomers();
+    onMounted(async () => {
+      fetchCustomers(); // Fetch customers after user data is ready
+    });
 
     const openModal = (customer = null) => {
       form.value = customer
         ? { ...customer }
-        : { id: null, name: "", phone: "", address: "", created_by: 1 };
+        : {
+            id: null,
+            name: "",
+            phone: "",
+            address: "",
+            created_by: userStore.user?.id,
+          };
       isModalOpen.value = true;
     };
 
@@ -766,8 +776,7 @@ export default {
     const saveCustomer = async () => {
       loading.value = true;
       try {
-        // if user  not loged in  show error
-        if (!userName.value) {
+        if (!userStore.user) {
           swal.fire({
             icon: "error",
             title: "Oops...",
@@ -778,18 +787,24 @@ export default {
           if (form.value.id) {
             await axios.put(
               `${API_URL}/customers/${form.value.id}`,
-              form.value
+              form.value,
+              {
+                headers: { Authorization: `Bearer ${userStore.user?.token}` },
+              }
             );
             toast.success("Customer updated successfully!");
           } else {
-            await axios.post(`${API_URL}/customers`, form.value);
+            await axios.post(`${API_URL}/customers`, form.value, {
+              headers: { Authorization: `Bearer ${userStore.user?.token}` },
+            });
             toast.success("Customer added successfully!");
           }
           closeModal();
-          fetchUserAndCustomers();
+          fetchCustomers();
         }
       } catch (error) {
-        toast.error("Error saving customer!");
+        console.error("Error saving customer:", error);
+        toast.error("Error saving customer.");
       } finally {
         loading.value = false;
       }
@@ -803,8 +818,7 @@ export default {
     const deleteCustomer = async () => {
       loading.value = true;
       try {
-        // if user  not loged in  show error
-        if (!userName.value) {
+        if (!userStore.user) {
           swal.fire({
             icon: "error",
             title: "Oops...",
@@ -812,22 +826,22 @@ export default {
             footer: '<a href="/login">Need access? Log in here</a>',
           });
         } else {
-          await axios.delete(`${API_URL}/customers/${deleteId.value}`);
+          await axios.delete(`${API_URL}/customers/${deleteId.value}`, {
+            headers: { Authorization: `Bearer ${userStore.user?.token}` },
+          });
+
           deleteModalOpen.value = false;
-          fetchUserAndCustomers();
+          fetchCustomers();
           toast.success("Customer deleted successfully!");
         }
       } catch (error) {
         console.error("Error deleting customer:", error);
-        toast.error("Error deleting customer!");
+        toast.error("Error deleting customer.");
       } finally {
         loading.value = false;
       }
     };
 
-    fetchCustomers();
-    fetchUser();
-    fetchUserAndCustomers();
     return {
       customers,
       pagination,
@@ -836,16 +850,17 @@ export default {
       loading,
       form,
       deleteId,
+      getDataLoading,
+      userName: userStore.user?.name,
       fetchCustomers,
       openModal,
       closeModal,
       saveCustomer,
       confirmDelete,
       deleteCustomer,
-      getDataLoading,
       goToDetails,
       goToInvoice,
-      userName,
+      user_data
     };
   },
   components: {

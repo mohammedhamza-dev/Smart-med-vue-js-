@@ -94,7 +94,14 @@
           </button>
         </form>
       </div>
-    </div>
+      <div
+          class="flex-1 bg-indigo-900 m-3 rounded-xl text-center hidden lg:flex"
+        >
+          <div
+            class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
+            style="background-image: url('/src/assets/smartlogo2.png')"
+          ></div>
+        </div>    </div>
   </div>
 </template>
 

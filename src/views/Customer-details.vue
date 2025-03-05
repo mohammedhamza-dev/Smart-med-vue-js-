@@ -1,541 +1,168 @@
-<template class=''>
-  <div v-if="getDataLoading" class="">
-    <Loading/>  </div>
+<template>
 
-  <div v-else class="p-4 2xl:max-w-[1800px]  max-w-[1300px]  mt-[100px] mx-auto">
-    <h1 class="md:text-3xl text-2xl font-semibold mb-[20px]">
-      Contracts for Customer #{{ customerId }}
-    </h1>
-
-    <!-- Add Contract Button -->
+  <Loading v-if="getDataLoading"/>
+                                                <section  v-if="customer"  class="py-24 relative">
+        <div class="w-full max-w-7xl px-4 md:px-5 lg:px-5 mx-auto">
+              <div class="w-full flex-col justify-start items-start lg:gap-5 gap-5 inline-flex">
+              <h2 class="w-full bg-indigo-900 text-white rounded-xl p-4 md:text-3xl text-2xl font-bold font-manrope leading-normal   border-gray-200">
+                  
+                  {{ customer?.name }}</h2>
+                  <div class="w-full bg-gray-100 p-8 rounded-lg flex-col justify-start items-start gap-9 flex">
+             
+                    <div class="w-full justify-start items-start gap-2.5 inline-flex">
+                        <ol class="w-full overflow-hidden flex flex-col gap-1.5">
+                            <li
+                                class="w-full relative h-48 after:content-[''] after:w-0.5 after:h-40 after:bg-indigo-600 after:inline-block after:mt-2 after:-bottom-0 after:absolute after:left-2.5">
+                                <a 
+                                    class="w-6 h-6 relative flex items-center justify-center font-medium gap-2.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
+                                        fill="none">
+                                        <path
+                                            d="M8.92958 11.9106C8.92958 11.9106 8.93233 11.9093 8.93699 11.9086C8.93177 11.9106 8.92958 11.9106 8.92958 11.9106Z"
+                                            fill="#4F46E5" />
+                                        <path
+                                            d="M8.95662 11.9086C8.96128 11.9093 8.96403 11.9106 8.96403 11.9106C8.96403 11.9106 8.96184 11.9106 8.95662 11.9086Z"
+                                            fill="#4F46E5" />
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M8.94001 0.199707H11.0597C12.8945 0.19969 14.353 0.199676 15.4955 0.353289C16.6735 0.511662 17.6348 0.846394 18.394 1.6056C19.1532 2.3648 19.4879 3.32606 19.6463 4.50402C19.7999 5.64658 19.7999 7.10502 19.7999 8.93985V11.0596C19.7999 12.8944 19.7999 14.3528 19.6463 15.4954C19.4879 16.6734 19.1532 17.6346 18.394 18.3938C17.6348 19.153 16.6735 19.4878 15.4955 19.6461C14.353 19.7997 12.8945 19.7997 11.0597 19.7997H8.93999C7.10516 19.7997 5.64672 19.7997 4.50417 19.6461C3.3262 19.4878 2.36494 19.153 1.60574 18.3938C0.846539 17.6346 0.511807 16.6734 0.353434 15.4954C0.199821 14.3528 0.199835 12.8944 0.199852 11.0596V8.93986C0.199835 7.10503 0.199821 5.64658 0.353434 4.50402C0.511807 3.32606 0.846539 2.3648 1.60574 1.6056C2.36494 0.846394 3.3262 0.511662 4.50417 0.353289C5.64672 0.199676 7.10518 0.19969 8.94001 0.199707ZM15.236 7.96437C15.5484 7.65195 15.5484 7.14542 15.236 6.833C14.9236 6.52058 14.4171 6.52058 14.1046 6.833L9.79534 11.1423C9.44601 11.4916 9.23972 11.6955 9.07398 11.822C9.00748 11.8727 8.96734 11.8952 8.94681 11.9045C8.92628 11.8952 8.88613 11.8727 8.81964 11.822C8.65389 11.6955 8.44761 11.4916 8.09828 11.1423L6.56559 9.60962C6.25317 9.2972 5.74664 9.2972 5.43422 9.60962C5.1218 9.92204 5.1218 10.4286 5.43422 10.741L7.00002 12.3068C7.3047 12.6116 7.58742 12.8944 7.84911 13.094C8.13871 13.315 8.49446 13.508 8.94681 13.508C9.39916 13.508 9.7549 13.315 10.0445 13.094C10.3062 12.8944 10.5889 12.6116 10.8936 12.3068L15.236 7.96437Z"
+                                            fill="#4F46E5" />
+                                    </svg>
+                                </a>
+                                <div class="w-full block flex flex-col gap-2.5 pl-3 absolute top-0 left-6">
+                                    <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Phone</h4>
+                                    <ul>
+                                        <h6 class="text-gray-500 text-base font-normal leading-relaxed">
+                                          {{ customer?.phone }}</h6>
+                                    </ul>
+                                </div>
+                                
+                            </li>
+                            <li
+                                class="w-full relative h-48 after:content-[''] after:w-0.5 after:h-40 after:bg-indigo-200 after:inline-block after:mt-2 after:-bottom-0 after:absolute after:left-2.5">
+                                <a 
+                                    class="w-6 h-6 relative flex items-center justify-center font-medium gap-2.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
+                                        <path
+                                            d="M16.6704 9.39887L12.3611 13.7082C11.6945 14.3749 11.3611 14.7082 10.9469 14.7082C10.5327 14.7082 10.1994 14.3749 9.53269 13.7082L8 12.1755M11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V11C21 7.22876 21 5.34315 19.8284 4.17157C18.6569 3 16.7712 3 13 3H11C7.22876 3 5.34315 3 4.17157 4.17157C3 5.34315 3 7.22876 3 11V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21Z"
+                                            stroke="#C7D2FE" stroke-width="1.6" stroke-linecap="round" />
+                                    </svg>
+                                </a>
+                                <div class="w-full block flex flex-col gap-2.5 pl-3 absolute top-0 left-6">
+                                    <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Address</h4>
+                                    <ul>
+                                        <h6 class="text-gray-500 text-base font-normal leading-relaxed">    {{ customer?.address }}</h6>
+                                    </ul>
+                                </div>
+                                
+                            </li>
+                            <li
+                                class="w-full relative h-48 after:content-[''] after:w-0.5 after:h-40 after:bg-indigo-200 after:inline-block after:mt-2 after:-bottom-0 after:absolute after:left-2.5">
+                                <a
+                                    class="w-6 h-6 relative flex items-center justify-center font-medium gap-2.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
+                                        <path
+                                            d="M16.6704 9.39887L12.3611 13.7082C11.6945 14.3749 11.3611 14.7082 10.9469 14.7082C10.5327 14.7082 10.1994 14.3749 9.53269 13.7082L8 12.1755M11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V11C21 7.22876 21 5.34315 19.8284 4.17157C18.6569 3 16.7712 3 13 3H11C7.22876 3 5.34315 3 4.17157 4.17157C3 5.34315 3 7.22876 3 11V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21Z"
+                                            stroke="#C7D2FE" stroke-width="1.6" stroke-linecap="round" />
+                                    </svg>
+                                </a>
+                                <div class="w-full block flex flex-col gap-2.5 pl-3 absolute top-0 left-6">
+                                    <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Start Date
+                                    </h4>
+                                    <ul>
+                                        <h6 class="text-gray-500 text-base font-normal leading-relaxed">{{ customer?.start_date }}</h6>
+                                    </ul>
+                                </div>
+                              
+                            </li>
+                            <li class="w-full relative h-24">
+                                <a 
+                                    class="w-6 h-6 relative flex items-center justify-center font-medium gap-2.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
+                                        <path
+                                            d="M16.6704 9.39887L12.3611 13.7082C11.6945 14.3749 11.3611 14.7082 10.9469 14.7082C10.5327 14.7082 10.1994 14.3749 9.53269 13.7082L8 12.1755M11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V11C21 7.22876 21 5.34315 19.8284 4.17157C18.6569 3 16.7712 3 13 3H11C7.22876 3 5.34315 3 4.17157 4.17157C3 5.34315 3 7.22876 3 11V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21Z"
+                                            stroke="#C7D2FE" stroke-width="1.6" stroke-linecap="round" />
+                                    </svg>
+                                </a>
+                                <div class="w-full block flex flex-col gap-2.5 pl-3 absolute top-0 left-6">
+                                    <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Free Trial</h4>
+                                    <ul>
+                                        <h6 class="text-gray-500 text-base font-normal leading-relaxed">{{ customer?.free_trial }}</h6>
+                                    </ul>
+                                </div>
+                                
+                            </li>
+                        </ol>
+                    </div>
+                    
+                </div>
+                <div class="w-full justify-center items-center gap-5 flex sm:flex-row flex-col">
+    <!-- Back Button (Go back to previous page) -->
     <button
-      @click="openModal()"
-      class="bg-indigo-800 dcursor-pointer hover:bg-indigo-700 duration-[0.7s] active:bg-indigo-900 text-white px-4 py-2 md:text-[15px] text-[10px] rounded mb-4"
-    >
-      Add Contract
+        @click="$router.back()"
+        class="md:w-fit w-full px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 transition-all duration-700 ease-in-out rounded-xl justify-center items-center flex">
+        <span class="px-2 py-px text-indigo-600 text-base font-semibold leading-relaxed">
+            Back 
+        </span>
     </button>
- <!-- Alert Info -->
- <div
-      v-if="contracts == 0"
-      class="bg-blue-200 px-[40px] py-[40px] mx-2 my-4 rounded-md md:text-lg text-[13px] flex items-center mx-auto"
-    >
-      <svg
-        viewBox="0 0 24 24"
-        class="text-blue-600 min-w-5 min-h-5 w-5 h-5 sm:min-w-5 sm:min-h-5 sm:w-5 sm:h-5 mr-3"
-      >
-        <path
-          fill="currentColor"
-          d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm.25,5a1.5,1.5,0,1,1-1.5,1.5A1.5,1.5,0,0,1,12.25,5ZM14.5,18.5h-4a1,1,0,0,1,0-2h.75a.25.25,0,0,0,.25-.25v-4.5a.25.25,0,0,0-.25-.25H10.5a1,1,0,0,1,0-2h1a2,2,0,0,1,2,2v4.75a.25.25,0,0,0,.25.25h.75a1,1,0,1,1,0,2Z"
-        ></path>
-      </svg>
-      <span class="text-blue-800">
-        There are currently no Contract associated with this customer. You can
-        add a new Contract by clicking the button above
-      </span>
-    </div>
-    <div v-else class="">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:xl:grid-cols-4 gap-6 p-">
-    <div v-for="contract in contracts" :key="contract.id" class="bg-white shadow-lg rounded-lg p-5 border border-gray-200">
-      <div class="bg-indigo-900 h-[140px] p-4 rounded-lg">
-        <h3 class="text-xl border-b pb-2 font-[500] text-white">
-          Contract #{{ contract.id }}
-        </h3>
-        <div class="mt-5">
-          <p class="text-gray-100 flex items-center gap-2 text-sm">
-            Start Date: {{ contract.start_date }}
-          </p>
-          <p class="text-gray-100 flex mt-3 items-center gap-2 text-sm">
-            Expire Date: {{ contract.expire_date }}
-          </p>
-        </div>
-      </div>
-
-      <div class="mt-4">
-        <div class="text-gray-800 flex items-center gap-2 text-sm">
-          <p class="font-bold">Payment:</p>
-          {{ contract.payment }}
-        </div>
-
-        <div class="text-gray-800 flex mt-3 gap-2 text-sm">
-          <p class="font-bold">Created By:</p>
-          {{ contract.creator ? contract.creator.name : "Unknown" }}
-        </div>
-        <div class="text-gray-800 grid mt-3 grid-cols-[auto,1fr] text-sm">
-          <p class="font-bold whitespace-nowrap">Note:</p>
-          <p class="break-words">{{ contract.note ? contract.note : "No note" }}</p>
-        </div>
-      </div>
-      <div class="mt-4 flex flex-wrap gap-3">
-        <button
-              @click="openModal(contract)"
-              class="bg-indigo-800 flex gap-2 text-white px-3 py-1 rounded-md text-sm hover:bg-indigo-700"
-            >
-              <svg
-                class="h-[15px]"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="#ffff"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <title></title>
-                  <g id="Complete">
-                    <g id="edit">
-                      <g>
-                        <path
-                          d="M20,16v4a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V6A2,2,0,0,1,4,4H8"
-                          fill="none"
-                          stroke="#ffff"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        ></path>
-                        <polygon
-                          fill="none"
-                          points="12.5 15.8 22 6.2 17.8 2 8.3 11.5 8 16 12.5 15.8"
-                          stroke="#ffff"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        ></polygon>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-              Edit
-            </button>
-        <button
-              @click="confirmDelete(contract.id)"
-              class="bg-red-500 flex gap-1 items-center text-white px-3 py-1 rounded-md text-sm hover:bg-red-600"
-            >
-              <svg
-                viewBox="0 -0.5 21 21"
-                version="1.1"
-                class="h-[15px]"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                fill="#FF0000 "
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <title>delete [#1487]</title>
-                  <desc>Created with Sketch.</desc>
-                  <defs></defs>
-                  <g
-                    id="Page-1"
-                    stroke-width="0.00021000000000000004"
-                    fill="none"
-                    fill-rule="evenodd"
-                  >
-                    <g
-                      id="Dribbble-Light-Preview"
-                      transform="translate(-179.000000, -360.000000)"
-                      fill="#ffff"
-                    >
-                      <g
-                        id="icons"
-                        transform="translate(56.000000, 160.000000)"
-                      >
-                        <path
-                          d="M130.35,216 L132.45,216 L132.45,208 L130.35,208 L130.35,216 Z M134.55,216 L136.65,216 L136.65,208 L134.55,208 L134.55,216 Z M128.25,218 L138.75,218 L138.75,206 L128.25,206 L128.25,218 Z M130.35,204 L136.65,204 L136.65,202 L130.35,202 L130.35,204 Z M138.75,204 L138.75,200 L128.25,200 L128.25,204 L123,204 L123,206 L126.15,206 L126.15,220 L140.85,220 L140.85,206 L144,206 L144,204 L138.75,204 Z"
-                          id="delete-[#1487]"
-                        ></path>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
-              Delete
-            </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pagination Controls -->
-  <div class="flex justify-between items-center mt-4">
-    <button @click="fetchContracts(currentPage - 1)" :disabled="currentPage === 1" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:bg-gray-200">
-      Previous
+    
+    <!-- Redirect to Contract Page -->
+    <button
+        @click="$router.push(`/contracts/${customer.id}`)"
+        class="md:w-fit w-full px-5 py-2.5 bg-indigo-800 hover:bg-indigo-700 active:bg-indigo-900  transition-all duration-700 ease-in-out shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] rounded-xl justify-center items-center flex">
+        <span class="px-2 py-px text-white text-base font-semibold leading-relaxed">
+Show Contracts        </span>
     </button>
-    <span class="text-gray-700"> Page {{ currentPage }} of {{ lastPage }} </span>
-    <button @click="fetchContracts(currentPage + 1)" :disabled="currentPage === lastPage" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:bg-gray-200">
-      Next
-    </button>
-  </div>
 </div>
 
-
-    <!-- Add/Edit Modal -->
-    <div
-      v-if="isModalOpen"
-      class="fixed inset-0 bg-black/50 px-4 max-h-screen overflow-y-auto py-[40px] flex items-center justify-center"
-    >
-      <div class="bg-white p-6  mt-[150px] rounded-2xl shadow-xl max-w-md w-full">
-        <div class="flex justify-between items-center border-b pb-3 mb-3">
-          <h2 class="text-xl font-semibold text-gray-800">
-            {{ form.id ? "Edit" : "Add" }} Contract
-          </h2>
-          <button
-            @click="closeModal"
-            class="text-gray-400 hover:text-gray-700 transition"
-          >
-            ✖
-          </button>
-        </div>
-
-        <form @submit.prevent="saveContract">
-          <div class="space-y-4">
-            <div class="flex w-full gap-3">
-
-<div class="flex-1">
-  <label class="block text-gray-600 text-sm font-medium mb-1">Start Date</label>
-  <input
-    v-model="form.start_date"
-    type="date"
-    required
-    class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-  />
-</div>
-
-<div class="flex-1">
-  <label class="block text-gray-600 text-sm font-medium mb-1">Expire Date</label>
-  <input
-    v-model="form.expire_date"
-    type="date"
-    required
-    class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-  />
-</div>
-
-</div>
-
-
-            <div>
-              <label class="block text-gray-600 text-sm font-medium mb-1"
-                >Payment</label
-              >
-              <input
-                v-model="form.payment"
-                type="number"
-                required
-                class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-              />
             </div>
-
-            <div>
-              <label class="block text-gray-600 text-sm font-medium mb-1"
-                >Note</label
-              >
-              <textarea
-                v-model="form.note"
-                placeholder="Enter note"
-                class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-              ></textarea>
-            </div>
-          </div>
-
-          <div class="flex justify-end space-x-3 mt-4">
-            <button
-              @click.prevent="closeModal"
-              class="px-5 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              class="px-5 py-2 text-white flex items-center bg-indigo-800 rounded-xl hover:bg-indigo-700 active:bg-indigo-900 transition"
-            >
-            <svg
-                v-if="loading"
-                class="animate-spin h-5 w-5 mr-2 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
-                <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"></path>
-              </svg>
-              {{ loading ? "Processing..." : "Save" }}
-            </button>
-          </div>
-        </form>
-
-      </div>
-    </div>
-         <!-- Delete Confirmation Modal -->
-         <div v-if="deleteModalOpen" id="popup-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-  <div class="relative p-4 w-full max-w-md">
-    <div class="relative bg-white rounded-lg shadow-lg ">
-      <!-- Close Button -->
-      <button @click="deleteModalOpen = false" type="button" class="absolute flex justify-center items-center top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8">
-        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-        </svg>
-        <span class="sr-only">Close modal</span>
-      </button>
-      
-      <!-- Modal Content -->
-      <div class="p-4 md:p-5 text-center">
-        <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-        </svg>
-        <h3 class="mb-5 text-lg font-normal text-gray-500 ">
-          Are you sure you want to delete this contract?
-        </h3>
-     <button
-              @click="deleteContracts"
-              type="button"
-              class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
-            >
-              <svg
-                v-if="loading"
-                class="animate-spin h-5 w-5 mr-2 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
-                <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"></path>
-              </svg>
-              <p v-else="loading">Yes, delete</p>
-
-              <span v-if="loading">Processing</span>
-            </button>
-        <button @click="deleteModalOpen = false" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100 ">
-          No, cancel
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-  </div>
+        </div>
+        
+    </section>
+    <Error v-else/>                              
 </template>
-
 
 <script>
 import axios from "axios";
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
-import VueCookies from "vue-cookies"; // Import vue-cookies
 import { useToast } from "vue-toastification";
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-axios.defaults.baseURL = API_URL;
+import Error from "./error.vue";
 
 export default {
   setup() {
     const route = useRoute();
     const customerId = ref(route.params.customer_id);
-    const contracts = ref([]);
-    const loading = ref(false);
-    const isModalOpen = ref(false);
-    const currentPage = ref(1);
-    const lastPage = ref(1);
-    const userId = ref(null);
-    const userName = ref(null);
-    const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
+    const customer = ref(null);
     const getDataLoading = ref(true);
-    const deleteModalOpen = ref(false);
-    const deleteId = ref(null);
     const toast = useToast();
-
     
-
-    const fetchUser = async () => {
-
-
-  try {
-    const response = await axios.get("/user", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    userId.value = response.data.id;
-    userName.value = response.data.name;
-
-    // Set created_by when fetching user
-    form.value.created_by = userId.value;
-  } catch (error) {
-    console.error("Error fetching user:", error);
-  }
- 
-};
-
-    const fetchContracts = async (page = 1) => {
+    const fetchCustomer = async () => {
       getDataLoading.value = true;
-
       try {
-        const response = await axios.get(`/customers/${customerId.value}/contracts?page=${page}`);
-        contracts.value = response.data.data;
-        currentPage.value = response.data.current_page;
-        lastPage.value = response.data.last_page;
+        const response = await axios.get(`/customer/${customerId.value}`);
+        customer.value = response.data;
       } catch (error) {
-        console.error("Error fetching contracts:", error);
-      }  finally {
-    getDataLoading.value = false;
-      }
-    };
-
-     //for  get user and   fetchCustomers then  loading be false
-     const fetchContractsAndCustomers = async () => {
-      getDataLoading.value = true; // Start loading
-      try {
-        await Promise.all([fetchUser(), fetchContracts()]); // Fetch both user and customers
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching contract:", error);
       } finally {
-        getDataLoading.value = false; // Set loading to false after both finish
+        getDataLoading.value = false;
       }
     };
-    const form = ref({
-      customer_id: customerId.value,
-      start_date: "",
-      expire_date: "",
-      payment: "",
-      note: "",
-      created_by: "",
-    });
-
-    const confirmDelete = (id) => {
-      deleteId.value = id;
-      deleteModalOpen.value = true;
-    };
-
-    const openModal = (contract = null) => {
-  if (contract) {
-    form.value = { ...contract };
-  } else {
-    form.value = {
-      customer_id: customerId.value,
-      start_date: "",
-      expire_date: "",
-      payment: "",
-      note: "",
-      created_by: userId.value, // Auto-set user ID
-    };
-  }
-  isModalOpen.value = true;
-};
-
-
-    const closeModal = () => {
-      isModalOpen.value = false;
-    };
-
-    const saveContract = async () => {
-      
-      loading.value = true;
-      try {
-
-        if (!userName.value) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        }
-
-else{
-  if (form.value.id) {
-          await axios.put(`/contracts/${form.value.id}`, form.value);
-          toast.success("contracts updated successfully!");
-
-        } else {
-          await axios.post("/contracts", form.value);
-          toast.success("contracts added successfully!");
-
-        }
-        fetchContracts(currentPage.value);
-        closeModal();
-}
-       
-
-      } catch (error) {
-        toast.error("Error!");
-
-
-      } finally {
-        loading.value = false;
-      }
-    };
-
-    fetchUser(); // Fetch user and set created_by
-  fetchContracts();
-  fetchContractsAndCustomers();
-  const deleteContracts = async () => {
-    loading.value = true;
-    try {
-        if (!userName.value) {
-            swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Please log in to continue",
-                footer: '<a href="/login">Need access? Log in here</a>',
-            });
-            return;
-        }
-
-        console.log("Deleting contract ID:", deleteId.value);
-        
-        // Remove from local state
-        contracts.value = contracts.value.filter(contract => contract.id !== deleteId.value);
-
-        await axios.delete(`${API_URL}/contracts/${deleteId.value}`);
-        
-        deleteModalOpen.value = false;
-        
-        // Ensure the list is updated from API
-        await fetchContracts(currentPage.value);
-
-        toast.success("Contract deleted successfully!");
-    } catch (error) {
-        toast.error("Error deleting contract!");
-    } finally {
-        loading.value = false;
-    }
-};
-
-
-
+    
+ 
+    onMounted(fetchCustomer);
+    
     return {
       customerId,
-      contracts,
-      loading,
-      isModalOpen,
-      form,
-      openModal,
-      closeModal,
-      saveContract,
-      fetchContracts,
-      currentPage,
-      lastPage,
+      customer,
       getDataLoading,
-      deleteModalOpen,
-      confirmDelete,
-      deleteContracts
     };
   },
   components: {
-    Loading,
+    Loading,Error
   },
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="header pb-[50px] font-family flex justify-center min-w-full">
-    <nav class="px-6 shadow lg:pt-1 lg:pb-4 pb-2 sm:mb-[-30px] bg-indigo-900 fixed top-0 left-0 right-0 z-50">
+    <nav class="px-6 shadow pt-1 pb-4  sm:mb-[-30px] bg-indigo-900 fixed top-0 left-0 right-0 z-50">
       <div class="max-w-[1800px] mx-auto flex items-center justify-between">
         
         <!-- Logo -->
