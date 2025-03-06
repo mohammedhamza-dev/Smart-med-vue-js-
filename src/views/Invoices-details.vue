@@ -35,7 +35,7 @@
         ></path>
       </svg>
       <span class="text-blue-800">
-        There are currently no invoices associated with this customer. You can
+        There are currently no invoice item  associated with this invoice. You can
         add a new invoice by clicking the button above
       </span>
     </div>

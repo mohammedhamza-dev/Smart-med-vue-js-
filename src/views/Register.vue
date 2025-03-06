@@ -1,19 +1,22 @@
 <template>
-     <div v-if="dataLoading" >
-       <Loading/>
-        </div>
+  <div v-if="dataLoading">
+    <Loading />
+  </div>
 
-  <div v-else class="min-h-screen flex pt-[40px] items-center justify-center bg-gray-50 px-6">
+  <div
+    v-else
+    class="min-h-screen flex pt-[40px] items-center justify-center bg-gray-50 px-6"
+  >
     <div
-        class="max-w-4xl w-full h-full bg-white shadow-lg rounded-xl flex overflow-hidden"
-      >
-        <!-- Left Section (Form) -->
-        <div class="w-full lg:w-1/2 p-8">
-          <h2 class="text-2xl font-semibold text-gray-700 text-center">
-            Create an Account
-          </h2>
-  
-             <!-- Google Login Button -->
+      class="max-w-4xl w-full h-full bg-white shadow-lg rounded-xl flex overflow-hidden"
+    >
+      <!-- Left Section (Form) -->
+      <div class="w-full lg:w-1/2 p-8">
+        <h2 class="text-2xl font-semibold text-gray-700 text-center">
+          Create an Account
+        </h2>
+
+        <!-- Google Login Button -->
         <button
           @click="loginWithGoogle"
           class="w-full mt-6 flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition"
@@ -42,137 +45,141 @@
           </svg>
           Sign In with Google
         </button>
-  
-          <div class="my-6 text-gray-500 text-center relative border-t">
-            <span
-              class="bg-white px-2 absolute left-1/2 transform -translate-x-1/2 -top-3"
-              >or</span
-            >
+
+        <div class="my-6 text-gray-500 text-center relative border-t">
+          <span
+            class="bg-white px-2 absolute left-1/2 transform -translate-x-1/2 -top-3"
+            >or</span
+          >
+        </div>
+
+        <form @submit.prevent="register" class="space-y-4">
+          <div class="pb-3">
+            <input
+              v-model="registerForm.name"
+              class="input-field"
+              type="text"
+              placeholder="Full Name"
+            />
+            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.name">
+              {{ registerErrors.name[0] }}
+            </p>
           </div>
-  
-          <form @submit.prevent="register" class="space-y-4">
-            <div class="pb-3">
-              <input
-                v-model="registerForm.name"
-                class="input-field"
-                type="text"
-                placeholder="Full Name"
-              />
-              <p  class="text-red-600 mt-2 text-sm" v-if="registerErrors.name">{{ registerErrors.name[0] }}</p>
-            </div>
-  
-            <div class="pb-3">
-              <input
-                v-model="registerForm.email"
-                class="input-field"
-                type="email"
-                placeholder="Email Address"
-              />
-              <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.email">{{
-                registerErrors.email[0]
-              }}</p>
-            </div>
-            <div class="pb-3">
-              <input
-                v-model="registerForm.password"
-                class="input-field"
-                type="password"
-                placeholder="Password"
-              />
-            </div>
-  
-            <div class="">
-              <input
-                v-model="registerForm.password_confirmation"
-                class="input-field"
-                type="password"
-                placeholder="Confirm Password"
-              />
-  
-              <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.password">{{
-                registerErrors.password[0]
-              }}</p>
-            </div>
-  
-            <!-- Register Button -->
-            <button
-              type="submit"
-              class="w-full flex items-center justify-center bg-indigo-800 text-white py-3 rounded-lg hover:bg-indigo-700 active:bg-indigo-900 transition"
-              :disabled="loading"
+
+          <div class="pb-3">
+            <input
+              v-model="registerForm.email"
+              class="input-field"
+              type="email"
+              placeholder="Email Address"
+            />
+            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.email">
+              {{ registerErrors.email[0] }}
+            </p>
+          </div>
+          <div class="pb-3">
+            <input
+              v-model="registerForm.password"
+              class="input-field"
+              type="password"
+              placeholder="Password"
+            />
+          </div>
+
+          <div class="">
+            <input
+              v-model="registerForm.password_confirmation"
+              class="input-field"
+              type="password"
+              placeholder="Confirm Password"
+            />
+
+            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.password">
+              {{ registerErrors.password[0] }}
+            </p>
+          </div>
+
+          <!-- Register Button -->
+          <button
+            type="submit"
+            class="w-full flex items-center justify-center bg-indigo-800 text-white py-3 rounded-lg hover:bg-indigo-700 active:bg-indigo-900 transition"
+            :disabled="loading"
+          >
+            <svg
+              v-if="loading"
+              class="animate-spin h-5 w-5 mr-2 text-white"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
-              <svg
-                v-if="loading"
-                class="animate-spin h-5 w-5 mr-2 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
-                <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"></path>
-              </svg>
-              <p v-if="!loading">Register</p>
-              <p v-else>Processing...</p>
-            </button>
-          </form>
-        </div>
-  
-        <!-- Right Section (Image) -->
+              <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+              <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"></path>
+            </svg>
+            <p v-if="!loading">Register</p>
+            <p v-else>Processing...</p>
+          </button>
+        </form>
+        <p class="text-center mt-5">
+          Already have an account ?<router-link class="font-[600]" to="/Login">
+            Sign in
+          </router-link>
+        </p>
+      </div>
+
+      <!-- Right Section (Image) -->
+      <div
+        class="flex-1 bg-indigo-900 m-3 rounded-xl text-center hidden lg:flex"
+      >
         <div
-          class="flex-1 bg-indigo-900 m-3 rounded-xl text-center hidden lg:flex"
-        >
-          <div
-            class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-            style="background-image: url('/src/assets/smartlogo2.png')"
-          ></div>
-        </div>
+          class="m-12 xl:m-16 logo-bg w-full bg-contain bg-center bg-no-repeat"
+        ></div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { ref } from "vue";
-  import { useRouter } from "vue-router";
-  import axios from "axios";
-  import { useToast } from "vue-toastification";
-  import VueCookies from "vue-cookies";
-  import Loading from "../components/Loading.vue";
+  </div>
+</template>
 
-  const API_URL = import.meta.env.VITE_API_URL;
+<script>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { useToast } from "vue-toastification";
+import VueCookies from "vue-cookies";
+import Loading from "../components/Loading.vue";
+
+const API_URL = import.meta.env.VITE_API_URL;
 axios.defaults.baseURL = API_URL; // Set API base URL
 
-  export default {
-    setup() {
-      const router = useRouter();
-      const registerForm = ref({
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: "",
-      });
-  
-      const registerErrors = ref({});
-      const registerSuccess = ref(null);
-      const loading = ref(false);
-      const toast = useToast();
-      const token = VueCookies.get("jwt"); // Change 'jwt_token' to your actual JWT cookie name
+export default {
+  setup() {
+    const router = useRouter();
+    const registerForm = ref({
+      name: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
+    });
+
+    const registerErrors = ref({});
+    const registerSuccess = ref(null);
+    const loading = ref(false);
+    const toast = useToast();
+    const token = VueCookies.get("jwt"); // Change 'jwt_token' to your actual JWT cookie name
     const dataLoading = ref(false);
     const fetchUser = async () => {
-      dataLoading.value=true
+      dataLoading.value = true;
       try {
-            const response = await axios.get("/user", {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-      
-          } catch (error) {
-       
-          } finally {
-            dataLoading.value = false; // Hide the loading spinner after fetching is complete
-          }
-      };
-      // **Google Login Function**
+        const response = await axios.get("/user", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+      } finally {
+        dataLoading.value = false; // Hide the loading spinner after fetching is complete
+      }
+    };
+    // **Google Login Function**
     const loginWithGoogle = async () => {
       try {
         const response = await axios.get("/google"); // Fetch Google login URL
@@ -183,63 +190,59 @@ axios.defaults.baseURL = API_URL; // Set API base URL
       }
     };
 
-      const register = async () => {
-        loading.value = true; // Start loading
-        try {
-          registerErrors.value = {};
-          registerSuccess.value = null;
-          const response = await axios.post(
-            "/register",
-            registerForm.value
-          );
-          registerSuccess.value = response.data.message;
-          toast.success("Registration successful!", {
-            timeout: 2000,
-          });
-  
-          setTimeout(() => {
-            router.push("/login");
-          }, 2000);
-        } catch (error) {
-          if (error.response && error.response.data.errors) {
-            registerErrors.value = error.response.data.errors;
-          }
-        } finally {
-          loading.value = false; // Stop loading
-        }
-      };
-      fetchUser();
+    const register = async () => {
+      loading.value = true; // Start loading
+      try {
+        registerErrors.value = {};
+        registerSuccess.value = null;
+        const response = await axios.post("/register", registerForm.value);
+        registerSuccess.value = response.data.message;
+        toast.success("Registration successful!", {
+          timeout: 2000,
+        });
 
-      return {
-        registerForm,
-        registerErrors,
-        registerSuccess,
-        loading,
-        dataLoading,
-        register,
-        loginWithGoogle
-      };
-    },
-      components: {
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      } catch (error) {
+        if (error.response && error.response.data.errors) {
+          registerErrors.value = error.response.data.errors;
+        }
+      } finally {
+        loading.value = false; // Stop loading
+      }
+    };
+    fetchUser();
+
+    return {
+      registerForm,
+      registerErrors,
+      registerSuccess,
+      loading,
+      dataLoading,
+      register,
+      loginWithGoogle,
+    };
+  },
+  components: {
     Loading,
   },
-  };
-  </script>
-  
-  <style>
-  .input-field {
-    width: 100%;
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    outline: none;
-    font-size: 14px;
-    background-color: #f9fafb;
-    transition: border-color 0.3s;
-  }
-  .input-field:focus {
-    border-color: #6366f1;
-    background-color: #ffffff;
-  }
-  </style>
-  
+};
+</script>
+
+<style>
+.input-field {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 14px;
+  background-color: #f9fafb;
+  transition: border-color 0.3s;
+}
+.input-field:focus {
+  border-color: #6366f1;
+  background-color: #ffffff;
+}
+</style>

@@ -190,6 +190,7 @@
   import { useRoute } from "vue-router";
   import Loading from "../components/Loading.vue";
   import { useToast } from "vue-toastification";
+import { useUserStore } from "../store/userStore";
   
   export default {
     setup() {
@@ -198,8 +199,11 @@
       const contract = ref(null);
       const getDataLoading = ref(true);
       const toast = useToast();
-      
+      const userStore = useUserStore();
+
       const fetchContract = async () => {
+        await userStore.fetchUser(); // Fetch user first
+
         getDataLoading.value = true;
         try {
           const response = await axios.get(`/contracts/${contract_id.value}`);

@@ -29,6 +29,27 @@
                                     </svg>
                                 </a>
                                 <div class="w-full block flex flex-col gap-2.5 pl-3 absolute top-0 left-6">
+                                    <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Create bY</h4>
+                                    <ul>
+                                        <h6 class="text-gray-500 text-base font-normal leading-relaxed">
+                                          {{ customer?.user.name }}</h6>
+                                    </ul>
+                                </div>
+                               
+                            </li>
+
+                            <li
+                                class="w-full relative h-48 after:content-[''] after:w-0.5 after:h-40 after:bg-indigo-200 after:inline-block after:mt-2 after:-bottom-0 after:absolute after:left-2.5">
+                                <a 
+                                    class="w-6 h-6 relative flex items-center justify-center font-medium gap-2.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
+                                        <path
+                                            d="M16.6704 9.39887L12.3611 13.7082C11.6945 14.3749 11.3611 14.7082 10.9469 14.7082C10.5327 14.7082 10.1994 14.3749 9.53269 13.7082L8 12.1755M11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V11C21 7.22876 21 5.34315 19.8284 4.17157C18.6569 3 16.7712 3 13 3H11C7.22876 3 5.34315 3 4.17157 4.17157C3 5.34315 3 7.22876 3 11V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21Z"
+                                            stroke="#C7D2FE" stroke-width="1.6" stroke-linecap="round" />
+                                    </svg>
+                                </a>
+                                <div class="w-full block flex flex-col gap-2.5 pl-3 absolute top-0 left-6">
                                     <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Phone</h4>
                                     <ul>
                                         <h6 class="text-gray-500 text-base font-normal leading-relaxed">
@@ -37,6 +58,7 @@
                                 </div>
                                 
                             </li>
+
                             <li
                                 class="w-full relative h-48 after:content-[''] after:w-0.5 after:h-40 after:bg-indigo-200 after:inline-block after:mt-2 after:-bottom-0 after:absolute after:left-2.5">
                                 <a 
@@ -76,8 +98,10 @@
                                 </div>
                               
                             </li>
-                            <li class="w-full relative h-24">
-                                <a 
+                     
+                            <li
+                                class="w-full relative h-48 after:content-[''] after:w-0.5 after:h-40 after:bg-indigo-200 after:inline-block after:mt-2 after:-bottom-0 after:absolute after:left-2.5">
+                                <a
                                     class="w-6 h-6 relative flex items-center justify-center font-medium gap-2.5">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                         fill="none">
@@ -87,9 +111,28 @@
                                     </svg>
                                 </a>
                                 <div class="w-full block flex flex-col gap-2.5 pl-3 absolute top-0 left-6">
-                                    <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Free Trial</h4>
+                                    <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Free Trial
+                                    </h4>
                                     <ul>
-                                        <h6 class="text-gray-500 text-base font-normal leading-relaxed">{{ customer?.free_trial }}</h6>
+                                        <h6 class="text-gray-500 text-base font-normal leading-relaxed">{{ customer?.free_trial  }}</h6>
+                                    </ul>
+                                </div>
+                              
+                            </li>
+                            <li class="w-full relative h-24">
+                                <a
+                                    class="w-6 h-6 relative flex items-center justify-center font-medium gap-2.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none">
+                                        <path
+                                            d="M16.6704 9.39887L12.3611 13.7082C11.6945 14.3749 11.3611 14.7082 10.9469 14.7082C10.5327 14.7082 10.1994 14.3749 9.53269 13.7082L8 12.1755M11 21H13C16.7712 21 18.6569 21 19.8284 19.8284C21 18.6569 21 16.7712 21 13V11C21 7.22876 21 5.34315 19.8284 4.17157C18.6569 3 16.7712 3 13 3H11C7.22876 3 5.34315 3 4.17157 4.17157C3 5.34315 3 7.22876 3 11V13C3 16.7712 3 18.6569 4.17157 19.8284C5.34315 21 7.22876 21 11 21Z"
+                                            stroke="#C7D2FE" stroke-width="1.6" stroke-linecap="round" />
+                                    </svg>
+                                </a>
+                                <div class="w-full block flex flex-col gap-2.5 pl-3 absolute top-0 left-6">
+                                    <h4 class="text-lg text-gray-900 font-semibold leading-relaxed">Note</h4>
+                                    <ul>
+                                        <h6 class="text-gray-500 text-base font-normal leading-relaxed">{{ customer?.note }}</h6>
                                     </ul>
                                 </div>
                                 
@@ -131,6 +174,7 @@ import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
 import { useToast } from "vue-toastification";
 import Error from "./error.vue";
+import { useUserStore } from "../store/userStore";
 
 export default {
   setup() {
@@ -139,10 +183,13 @@ export default {
     const customer = ref(null);
     const getDataLoading = ref(true);
     const toast = useToast();
-    
+    // Get User Store (Pinia)
+    const userStore = useUserStore();
     const fetchCustomer = async () => {
       getDataLoading.value = true;
       try {
+        await userStore.fetchUser(); // Fetch user first
+
         const response = await axios.get(`/customer/${customerId.value}`);
         customer.value = response.data;
       } catch (error) {

@@ -30,8 +30,8 @@
         ></path>
       </svg>
       <span class="text-blue-800">
-        There are currently no invoices associated with this customer. You can
-        add a new invoice by clicking the button above
+        There are currently no associated customers.You can
+        add a new customers by clicking the butto751 725 23 21n above
       </span>
     </div>
     <div v-else class="">
@@ -130,7 +130,7 @@
             </div>
 
             <div class="text-gray-800 flex mt-1 gap-2 text-md">
-              <p class="font-[600]">Free Trial: :</p>
+              <p class="font-[600]">Free Trial:</p>
               {{ customer.free_trial }}
             </div>
             <!-- <div class="text-gray-800 grid mt-1 grid-cols-[auto,1fr] text-md">
@@ -681,6 +681,7 @@ import Loading from "../components/Loading.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/userStore";
 import { computed } from "vue";
+import VueCookies from 'vue-cookies';
 
 export default {
   setup() {
@@ -695,6 +696,7 @@ export default {
     const router = useRouter();
     const API_URL = import.meta.env.VITE_API_URL;
     const toast = useToast();
+    const token = ref(VueCookies.get("jwt")); // Get JWT from cookies
 
     const goToDetails = (id) => router.push(`/Contracts/${id}`);
     const goToInvoice = (id) => router.push(`/invoices/${id}`);
@@ -708,8 +710,25 @@ export default {
     const userStore = useUserStore();
     const user_data = computed(() => userStore.user?.name || "User");
 
-    
-    const form = ref({
+   // Function to extract token from URL
+   const getTokenFromUrl = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const userToken = urlParams.get("user");
+
+  if (userToken) {
+    const [, tokenValue] = userToken.split("|"); // Extract the token part after '|'
+    if (tokenValue) {
+      VueCookies.set("jwt", tokenValue, "7d"); // Store JWT for 7 days
+      token.value = tokenValue;
+
+      // Remove the token from the URL (optional for security)
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // Refresh the page to apply changes
+      window.location.reload();
+    }
+  }
+};    const form = ref({
       id: null,
       name: "",
       start_date: "",
@@ -753,7 +772,9 @@ export default {
     };
 
     onMounted(async () => {
-      fetchCustomers(); // Fetch customers after user data is ready
+      fetchCustomers(); 
+      getTokenFromUrl(); 
+
     });
 
     const openModal = (customer = null) => {

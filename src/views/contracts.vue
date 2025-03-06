@@ -110,7 +110,7 @@
                                   `/contracts-details/${contract.id}`
                                 )
                               "
-                              class="flex-shrink-0 flex items-center justify-center text-indigo-600 w-10 h-10 rounded-full bg-gradient-to-b from-indigo-50 to-indigo-100 hover:from-white hover:to-indigo-50 focus:outline-none focus-visible:from-white focus-visible:to-white transition duration-150 ml-2"
+                              class="flex-shrink-0 flex items-center cursor-pointer  justify-center text-indigo-600 w-10 h-10 rounded-full bg-gradient-to-b from-indigo-50 to-indigo-100 hover:from-white hover:to-indigo-50 focus:outline-none focus-visible:from-white focus-visible:to-white transition duration-150 ml-2"
                             >
                               <span class="block font-bold"
                                 ><span class="sr-only">Read more</span> -></span
@@ -216,127 +216,12 @@
                     Delete
                   </button>
                 </div>
-                <!-- Add/Edit Modal -->
-                <div
-                  v-if="isModalOpen"
-                  class="fixed inset-0 bg-black/0 px-4 max-h-screen overflow-y-auto py-[40px] flex items-center justify-center"
-                >
-                  <div
-                    class="bg-white p-6 mt-[150px] rounded-2xl shadow-xl max-w-md w-full"
-                  >
-                    <div
-                      class="flex justify-between items-center border-b pb-3 mb-3"
-                    >
-                      <h2 class="text-xl font-semibold text-gray-800">
-                        {{ form.id ? "Edit" : "Add" }} Contract
-                      </h2>
-                      <button
-                        @click="closeModal"
-                        class="text-gray-400 hover:text-gray-700 transition"
-                      >
-                        ✖
-                      </button>
-                    </div>
-
-                    <form @submit.prevent="saveContract">
-                      <div class="space-y-4">
-                        <div class="flex w-full gap-3">
-                          <div class="flex-1">
-                            <label
-                              class="block text-gray-600 text-sm font-medium mb-1"
-                              >Start Date</label
-                            >
-                            <input
-                              v-model="form.start_date"
-                              type="date"
-                              required
-                              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-
-                          <div class="flex-1">
-                            <label
-                              class="block text-gray-600 text-sm font-medium mb-1"
-                              >Expire Date</label
-                            >
-                            <input
-                              v-model="form.expire_date"
-                              type="date"
-                              required
-                              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label
-                            class="block text-gray-600 text-sm font-medium mb-1"
-                            >Payment</label
-                          >
-                          <input
-                            v-model="form.payment"
-                            type="number"
-                            required
-                            class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label
-                            class="block text-gray-600 text-sm font-medium mb-1"
-                            >Note</label
-                          >
-                          <textarea
-                            v-model="form.note"
-                            placeholder="Enter note"
-                            class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                          ></textarea>
-                        </div>
-                      </div>
-
-                      <div class="flex justify-end space-x-3 mt-4">
-                        <button
-                          @click.prevent="closeModal"
-                          class="px-5 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          class="px-5 py-2 text-white flex items-center bg-indigo-800 rounded-xl hover:bg-indigo-700 active:bg-indigo-900 transition"
-                        >
-                          <svg
-                            v-if="loading"
-                            class="animate-spin h-5 w-5 mr-2 text-white"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <circle
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke-opacity="0.25"
-                            ></circle>
-                            <path
-                              d="M12 2a10 10 0 0 1 10 10"
-                              stroke-opacity="0.75"
-                            ></path>
-                          </svg>
-                          {{ loading ? "Processing..." : "Save" }}
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
+              
                 <!-- Delete Confirmation Modal -->
                 <div
                   v-if="deleteModalOpen"
                   id="popup-modal"
-                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/0"
+                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/5"
                 >
                   <div class="relative p-4 w-full max-w-md">
                     <div class="relative bg-white rounded-lg shadow-lg">
@@ -474,8 +359,8 @@
 
             <form @submit.prevent="saveContract">
               <div class="space-y-4">
-                <div class="flex w-full gap-3">
-                  <div class="flex-1">
+                <div class="flex max-w-full gap-3">
+                  <div class="flex-1 w-1/2">
                     <label class="block text-gray-600 text-sm font-medium mb-1"
                       >Start Date</label
                     >
@@ -487,7 +372,7 @@
                     />
                   </div>
 
-                  <div class="flex-1">
+                  <div class="flex-1 w-1/2">
                     <label class="block text-gray-600 text-sm font-medium mb-1"
                       >Expire Date</label
                     >
@@ -562,99 +447,7 @@
             </form>
           </div>
         </div>
-        <!-- Delete Confirmation Modal -->
-        <div
-          v-if="deleteModalOpen"
-          id="popup-modal"
-          class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-        >
-          <div class="relative p-4 w-full max-w-md">
-            <div class="relative bg-white rounded-lg shadow-lg">
-              <!-- Close Button -->
-              <button
-                @click="deleteModalOpen = false"
-                type="button"
-                class="absolute flex justify-center items-center top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8"
-              >
-                <svg
-                  class="w-3 h-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                  />
-                </svg>
-                <span class="sr-only">Close modal</span>
-              </button>
-
-              <!-- Modal Content -->
-              <div class="p-4 md:p-5 text-center">
-                <svg
-                  class="mx-auto mb-4 text-gray-400 w-12 h-12"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                </svg>
-                <h3 class="mb-5 text-lg font-normal text-gray-500">
-                  Are you sure you want to delete this contract?
-                </h3>
-                <button
-                  @click="deleteContracts"
-                  type="button"
-                  class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5"
-                >
-                  <svg
-                    v-if="loading"
-                    class="animate-spin h-5 w-5 mr-2 text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke-opacity="0.25"
-                    ></circle>
-                    <path
-                      d="M12 2a10 10 0 0 1 10 10"
-                      stroke-opacity="0.75"
-                    ></path>
-                  </svg>
-                  <p v-else="loading">Yes, delete</p>
-
-                  <span v-if="loading">Processing</span>
-                </button>
-                <button
-                  @click="deleteModalOpen = false"
-                  type="button"
-                  class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100"
-                >
-                  No, cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      
       </div>
     </div>
   </div>
@@ -795,10 +588,10 @@ export default {
           });
         }
 
-        console.log("Deleting contract ID:", deleteId.value);
 
-        // Remove from local state
-        contracts.value = contracts.value.filter(
+       else{
+         // Remove from local state
+         contracts.value = contracts.value.filter(
           (contract) => contract.id !== deleteId.value
         );
 
@@ -810,6 +603,7 @@ export default {
         await fetchContracts(currentPage.value);
 
         toast.success("Contract deleted successfully!");
+       }
       } catch (error) {
         toast.error("Error deleting contract!");
       } finally {

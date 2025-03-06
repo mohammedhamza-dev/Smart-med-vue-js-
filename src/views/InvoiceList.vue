@@ -9,7 +9,7 @@
     </div>
 
     
-  <div v-else class="p-4 max-w-[1300px] mt-[100px] mx-auto">
+  <div v-else class="p-4 2xl:max-w-[1800px] max-w-[1300px] mt-[100px] mx-auto">
     <h1 class="md:text-3xl ml-4 text-2xl font-semibold mb-[20px]">
       Invoices for Customer #{{ customerId }}
     </h1>
@@ -63,20 +63,33 @@
                         <!-- Card header -->
                         <div class="w-full sm:flex justify-between items-center mb-3">
                             <!-- Title -->
-                            <h2 class="text-2xl leading-snug font-extrabold text-gray-50 truncate mb-1 sm:mb-0"> {{invoices.creator.name}}</h2>
+                            <h2 class="text-2xl leading-snug font-extrabold text-gray-50 truncate mb-1 sm:mb-0"> Invoice</h2>
                           
                         </div>
                         <!-- Card body -->
                         <div class="flex items-end justify-between whitespace-normal">
                             <!-- Paragraph -->
                           <div class="flex flex-col">
-                            <p class="text-white text-md"> Start Date  : {{ invoices.start_date }}</p>
-                            <p class="text-white text-md mt-1"> Expire Date  : {{ invoices.expire_date }}</p>
+                            <p class="text-gray-100 text-sm"><span class="text-white font-bold"> Customer Name  : </span>{{ invoices.customer.name }}</p>
+                            
+
+
+                            <p class="text-gray-100 text-sm"><span class="text-white font-bold">Created By : </span>{{ invoices.creator.name }}</p>
+
+
+
+                            <p class="text-gray-100 text-sm"><span class="text-white font-bold"> Invoice Date  : </span>{{ invoices.invoice_date }}</p>
+
+
+                            <p class="text-gray-100 text-sm"><span class="text-white font-bold"> Done  : </span>{{ invoices.done?"Yes Done":"No Undone" }}</p>
+
+
+
 
                           </div>
                             <!-- More link -->
                             <a         @click="$router.push(`/invoices-details/${invoices.id}`)"
-                            class="flex-shrink-0 flex items-center justify-center text-indigo-600 w-10 h-10 rounded-full bg-gradient-to-b from-indigo-50 to-indigo-100 hover:from-white hover:to-indigo-50 focus:outline-none focus-visible:from-white focus-visible:to-white transition duration-150 ml-2" >
+                            class="flex-shrink-0 flex items-center justify-center text-indigo-600 cursor-pointer w-10 h-10 rounded-full bg-gradient-to-b from-indigo-50 to-indigo-100 hover:from-white hover:to-indigo-50 focus:outline-none focus-visible:from-white focus-visible:to-white transition duration-150 ml-2" >
                                 <span class="block font-bold"><span class="sr-only">Read more</span> -></span>
                             </a>
                         </div>
@@ -184,7 +197,7 @@
     <div
       v-if="deleteModalOpen"
       id="popup-modal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/10"
     >
       <div class="relative p-4 w-full max-w-md">
         <div class="relative bg-white rounded-lg shadow-lg">

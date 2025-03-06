@@ -93,16 +93,24 @@
             <p v-else>Processing...</p>
           </button>
         </form>
-      </div>
+<p class="text-center mt-5">        Don’t have an account? <router-link class="font-[600]"
+  to="/Register"
+  >
+  Sign up
+
+</router-link>
+</p>      </div>
       <div
           class="flex-1 bg-indigo-900 m-3 rounded-xl text-center hidden lg:flex"
         >
           <div
-            class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-            style="background-image: url('/src/assets/smartlogo2.png')"
+            class="m-12 xl:m-16 logo-bg w-full bg-contain bg-center bg-no-repeat"
           ></div>
-        </div>    </div>
+        </div> 
+        
+         </div>
   </div>
+  
 </template>
 
 <script>

@@ -2,8 +2,14 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-  }/* HTML: <div class="loader"></div> */
-/* From Uiverse.io by mobinkakei */ 
+  }
+
+.logo-bg {
+  background-image: url('/src/assets/smartlogo2.png');
+}
+
+
+  /* loader */
 #wifi-loader {
   --background: #62abff;
   --front-color: #4f29f0;
