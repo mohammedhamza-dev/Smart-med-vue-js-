@@ -185,43 +185,31 @@
   </template>
   
   <script>
-  import axios from "axios";
-  import { ref, onMounted } from "vue";
+  import { computed, onMounted } from "vue";
   import { useRoute } from "vue-router";
   import Loading from "../components/Loading.vue";
-  import { useToast } from "vue-toastification";
-import { useUserStore } from "../store/userStore";
+  import { useUserStore } from "../store/userStore";
+  import { useContractDetailStore } from "../store/contractDetailStore";
   
   export default {
     setup() {
       const route = useRoute();
-      const contract_id = ref(route.params.contract_id);
-      const contract = ref(null);
-      const getDataLoading = ref(true);
-      const toast = useToast();
       const userStore = useUserStore();
-
-      const fetchContract = async () => {
-        await userStore.fetchUser(); // Fetch user first
-
-        getDataLoading.value = true;
-        try {
-          const response = await axios.get(`/contracts/${contract_id.value}`);
-          contract.value = response.data;
-        } catch (error) {
-          console.error("Error fetching contract:", error);
-        } finally {
-          getDataLoading.value = false;
-        }
-      };
+      const contractDetailStore = useContractDetailStore();
       
-   
-      onMounted(fetchContract);
+      contractDetailStore.setContractId(route.params.contract_id);
       
+      onMounted(() => {
+        contractDetailStore.fetchContract();
+      });
+  
       return {
-        contract_id,
-        contract,
-        getDataLoading,
+
+        contract_id: computed(() => contractDetailStore.contractId),
+        contract: computed(() => contractDetailStore.contract),
+        getDataLoading: computed(() => contractDetailStore.getDataLoading),
+        
+        user: computed(() => userStore.user),
       };
     },
     components: {

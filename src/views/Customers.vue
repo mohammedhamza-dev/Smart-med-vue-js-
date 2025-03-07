@@ -674,205 +674,83 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from "vue";
-import axios from "axios";
+import { ref, onMounted, computed } from "vue";
 import { useToast } from "vue-toastification";
 import Loading from "../components/Loading.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/userStore";
-import { computed } from "vue";
-import VueCookies from 'vue-cookies';
+import { useCustomersStore } from "../store/customersStore";
 
 export default {
   setup() {
-    const customers = ref([]);
-    const pagination = ref({
-      current_page: 1,
-      per_page: 10,
-      total: 0,
-      last_page: 1,
-    });
-
     const router = useRouter();
-    const API_URL = import.meta.env.VITE_API_URL;
     const toast = useToast();
-    const token = ref(VueCookies.get("jwt")); // Get JWT from cookies
-
-    const goToDetails = (id) => router.push(`/Contracts/${id}`);
-    const goToInvoice = (id) => router.push(`/invoices/${id}`);
-
+    const userStore = useUserStore();
+    const customersStore = useCustomersStore();
+    
     const isModalOpen = ref(false);
     const deleteModalOpen = ref(false);
-    const loading = ref(false);
-    const getDataLoading = ref(true);
-
-    // Get User Store (Pinia)
-    const userStore = useUserStore();
+    
+    const goToDetails = (id) => router.push(`/Contracts/${id}`);
+    const goToInvoice = (id) => router.push(`/invoices/${id}`);
+    
+    // Computed properties from stores
+    const customers = computed(() => customersStore.customers);
+    const pagination = computed(() => customersStore.pagination);
+    const loading = computed(() => customersStore.isLoading);
+    const getDataLoading = computed(() => customersStore.getDataLoading);
+    const form = computed(() => customersStore.form);
     const user_data = computed(() => userStore.user?.name || "User");
-
-   // Function to extract token from URL
-   const getTokenFromUrl = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const userToken = urlParams.get("user");
-
-  if (userToken) {
-    const [, tokenValue] = userToken.split("|"); // Extract the token part after '|'
-    if (tokenValue) {
-      VueCookies.set("jwt", tokenValue, "7d"); // Store JWT for 7 days
-      token.value = tokenValue;
-
-      // Remove the token from the URL (optional for security)
-      window.history.replaceState({}, document.title, window.location.pathname);
-
-      // Refresh the page to apply changes
-      window.location.reload();
-    }
-  }
-};    const form = ref({
-      id: null,
-      name: "",
-      start_date: "",
-      free_trial: "",
-      note: "",
-      phone: "",
-      address: "",
-      created_by: null,
-    });
-
-    const deleteId = ref(null);
-
-    /**
-     * Fetch customers after user data is loaded.
-     */
-    const fetchCustomers = async (page = 1) => {
-      getDataLoading.value = true;
-      try {
-        await userStore.fetchUser(); // Fetch user first
-        if (userStore.user) {
-          form.value.created_by = userStore.user.id; // Set created_by
-        }
-        const response = await axios.get(
-          `${API_URL}/customers?page=${page}&per_page=${pagination.value.per_page}`,
-          { headers: { Authorization: `Bearer ${userStore.user?.token}` } }
-        );
-
-        customers.value = response.data.data;
-        pagination.value = {
-          current_page: response.data.current_page,
-          per_page: response.data.per_page,
-          total: response.data.total,
-          last_page: response.data.last_page,
-        };
-      } catch (error) {
-        console.error("Error fetching customers:", error);
-        toast.error("Error fetching customers.");
-      } finally {
-        getDataLoading.value = false;
-      }
-    };
-
-    onMounted(async () => {
-      fetchCustomers(); 
-      getTokenFromUrl(); 
-
-    });
-
+    
     const openModal = (customer = null) => {
-      form.value = customer
-        ? { ...customer }
-        : {
-            id: null,
-            name: "",
-            phone: "",
-            address: "",
-            created_by: userStore.user?.id,
-          };
+      customersStore.setFormData(customer);
       isModalOpen.value = true;
     };
-
+    
     const closeModal = () => {
       isModalOpen.value = false;
     };
-
+    
     const saveCustomer = async () => {
-      loading.value = true;
-      try {
-        if (!userStore.user) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        } else {
-          if (form.value.id) {
-            await axios.put(
-              `${API_URL}/customers/${form.value.id}`,
-              form.value,
-              {
-                headers: { Authorization: `Bearer ${userStore.user?.token}` },
-              }
-            );
-            toast.success("Customer updated successfully!");
-          } else {
-            await axios.post(`${API_URL}/customers`, form.value, {
-              headers: { Authorization: `Bearer ${userStore.user?.token}` },
-            });
-            toast.success("Customer added successfully!");
-          }
-          closeModal();
-          fetchCustomers();
-        }
-      } catch (error) {
-        console.error("Error saving customer:", error);
-        toast.error("Error saving customer.");
-      } finally {
-        loading.value = false;
+      const success = await customersStore.saveCustomer();
+      if (success) {
+        closeModal();
       }
     };
-
+    
     const confirmDelete = (id) => {
-      deleteId.value = id;
+      customersStore.setDeleteId(id);
       deleteModalOpen.value = true;
     };
-
+    
     const deleteCustomer = async () => {
-      loading.value = true;
-      try {
-        if (!userStore.user) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        } else {
-          await axios.delete(`${API_URL}/customers/${deleteId.value}`, {
-            headers: { Authorization: `Bearer ${userStore.user?.token}` },
-          });
-
-          deleteModalOpen.value = false;
-          fetchCustomers();
-          toast.success("Customer deleted successfully!");
-        }
-      } catch (error) {
-        console.error("Error deleting customer:", error);
-        toast.error("Error deleting customer.");
-      } finally {
-        loading.value = false;
+      const success = await customersStore.deleteCustomer();
+      if (success) {
+        deleteModalOpen.value = false;
       }
     };
-
+    
+    const fetchCustomers = (page = 1) => {
+      customersStore.fetchCustomers(page);
+    };
+    
+    onMounted(() => {
+      fetchCustomers();
+      customersStore.getTokenFromUrl();
+    });
+    
     return {
       customers,
       pagination,
+      loading,
+      getDataLoading,
+      form,
+      user_data,
+      
       isModalOpen,
       deleteModalOpen,
-      loading,
-      form,
-      deleteId,
-      getDataLoading,
-      userName: userStore.user?.name,
+      
+      // Methods
       fetchCustomers,
       openModal,
       closeModal,
@@ -881,7 +759,9 @@ export default {
       deleteCustomer,
       goToDetails,
       goToInvoice,
-      user_data
+      
+      // Additional user data
+      userName: computed(() => userStore.user?.name)
     };
   },
   components: {

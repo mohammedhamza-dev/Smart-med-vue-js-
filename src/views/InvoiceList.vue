@@ -377,180 +377,57 @@
 </template>
 
 <script>
-import axios from "axios";
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import Loading from "../components/Loading.vue";
-import { useRouter } from "vue-router";
-import VueCookies from "vue-cookies"; // Import vue-cookies
-import { useToast } from "vue-toastification";
 import { useUserStore } from "../store/userStore";
+import { useInvoiceStore } from "../store/invoiceStore";
 import Error from "./error.vue";
-
-const API_URL = import.meta.env.VITE_API_URL;
-axios.defaults.baseURL = API_URL;
 
 export default {
   setup() {
     const route = useRoute();
-    const customerId = ref(route.params.customer_id);
-    const customerId_error = ref(false);
-
-    const invoices = ref([]);
-    const loading = ref(false);
-    const getDataLoading = ref(true);
-
-    const isModalOpen = ref(false);
-    const deleteModalOpen = ref(false);
-    const deleteId = ref(null);
     const router = useRouter();
-    const currentPage = ref(1);
-    const lastPage = ref(1);
-
-    const userId = ref(null);
-    const userName = ref(null);
-    const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
-    const toast = useToast();
- // Get User Store (Pinia)
- const userStore = useUserStore();
-    const user = userStore.user;
-
-    const form = ref({
-      customer_id: customerId.value,
-      invoice_date: "",
-      done: false,
-      created_by: userId.value,
-    });
-
-
+    const userStore = useUserStore();
+    const invoiceStore = useInvoiceStore();
+    
+    invoiceStore.setCustomerId(route.params.customer_id);
+    
     const goToInvoiceDetails = (invoiceId) => {
       router.push(`/invoices-details/${invoiceId}`);
     };
-    const fetchInvoices = async (page = 1) => {
-      getDataLoading.value = true;
-      try {
-        await userStore.fetchUser(); // Fetch user first
-        if (userStore.user) {
-          form.value.created_by = userStore.user.id; // Set created_by
-        }
-        const response = await axios.get(
-          `/invoices/customer/${customerId.value}?page=${page}`
-        );
-
-        // Ensure `done` is always a boolean
-        invoices.value = response.data.data.map((invoice) => ({
-          ...invoice,
-          done: Boolean(invoice.done), // Convert to true/false
-        }));
-
-        currentPage.value = response.data.current_page;
-        lastPage.value = response.data.last_page;
-      } catch (error) {
-        customerId_error.value=true      } finally {
-        getDataLoading.value = false;
-      }
-    };
-
-    const openModal = (invoice = null) => {
-      form.value = invoice
-        ? { ...invoice, done: invoice.done ?? false } // Ensure `done` is never undefined
-        : {
-            customer_id: customerId.value,
-            invoice_date: "",
-            done: false,
-            created_by: userStore.user?.id, // Auto-set user ID
-          };
-      isModalOpen.value = true;
-    };
-
-    const closeModal = () => {
-      isModalOpen.value = false;
-    };
-
-    const saveInvoice = async () => {
-      loading.value = true;
-      try {
-        if (!userStore.user) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        }  else {
-          if (form.value.id) {
-            await axios.put(`/invoices/${form.value.id}`, form.value);
-            toast.success("invoice updated successfully!");
-
-          } else {
-            await axios.post("/invoices", form.value);
-            toast.success("invoice added successfully!");
-
-          }
-          fetchInvoices();
-          closeModal();
-        }
-      } catch (error) {
-        console.error("Error saving invoice:", error);
-      } finally {
-        loading.value = false;
-      }
-    };
-
-    const confirmDelete = (id) => {
-      deleteId.value = id;
-      deleteModalOpen.value = true;
-    };
-
-    const deleteInvoice = async () => {
-      loading.value = true;
-      try {
-        if (!userStore.user) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        } else {
-          await axios.delete(`/invoices/${deleteId.value}`);
-          deleteModalOpen.value = false;
-          fetchInvoices();
-          toast.success("invoice Deleted successfully!");
-
-        }
-      } catch (error) {
-        console.error("Error deleting invoice:", error);
-      } finally {
-        loading.value = false;
-      }
-    };
 
     onMounted(() => {
-  fetchInvoices();
-});
+      invoiceStore.fetchInvoices();
+    });
 
     return {
+      customerId: computed(() => invoiceStore.customerId),
+      invoices: computed(() => invoiceStore.invoices),
+      loading: computed(() => invoiceStore.loading),
+      getDataLoading: computed(() => invoiceStore.getDataLoading),
+      isModalOpen: computed(() => invoiceStore.isModalOpen),
+      deleteModalOpen: computed(() => invoiceStore.deleteModalOpen),
+      deleteId: computed(() => invoiceStore.deleteId),
+      form: computed(() => invoiceStore.form),
+      currentPage: computed(() => invoiceStore.currentPage),
+      lastPage: computed(() => invoiceStore.lastPage),
+      customerId_error: computed(() => invoiceStore.customerId_error),
+      
+
+      fetchInvoices: invoiceStore.fetchInvoices,
+      openModal: invoiceStore.openModal,
+      closeModal: invoiceStore.closeModal,
+      saveInvoice: invoiceStore.saveInvoice,
+      confirmDelete: invoiceStore.confirmDelete,
+      deleteInvoice: invoiceStore.deleteInvoice,
+      
       goToInvoiceDetails,
-      getDataLoading,
-      currentPage,
-      lastPage,
-      customerId,
-      invoices,
-      loading,
-      isModalOpen,
-      deleteModalOpen,
-      deleteId,
-      form,
-      openModal,
-      closeModal,
-      saveInvoice,
-      confirmDelete,
-      deleteInvoice,
-      fetchInvoices,
-      customerId_error
+      
+      // User store for reference if needed
+      user: computed(() => userStore.user),
     };
   },
-  components: { Loading ,Error},
+  components: { Loading, Error },
 };
 </script>

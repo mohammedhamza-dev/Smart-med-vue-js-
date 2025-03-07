@@ -452,187 +452,99 @@
     </div>
   </div>
 </template>
-
 <script>
-import axios from "axios";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
-import VueCookies from "vue-cookies"; // Import vue-cookies
 import { useToast } from "vue-toastification";
 import { useUserStore } from "../store/userStore";
 import Error from "./error.vue";
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-axios.defaults.baseURL = API_URL;
+import { useContractsStore } from "../store/contracstStore";
 
 export default {
   setup() {
     const route = useRoute();
-    const customerId = ref(route.params.customer_id);
-    const customerId_error = ref(false);
-
-    const contracts = ref([]);
-    const loading = ref(false);
-    const isModalOpen = ref(false);
-    const currentPage = ref(1);
-    const lastPage = ref(1);
-    const userId = ref(null);
-    const userName = ref(null);
-    const token = VueCookies.get("jwt");
-    const getDataLoading = ref(true);
-    const deleteModalOpen = ref(false);
-    const deleteId = ref(null);
     const toast = useToast();
-    // Get User Store (Pinia)
     const userStore = useUserStore();
-    const user = userStore.user;
-
-    const fetchContracts = async (page = 1) => {
-      getDataLoading.value = true;
-
-      try {
-        await userStore.fetchUser(); // Fetch user first
-        if (userStore.user) {
-          form.value.created_by = userStore.user.id; // Set created_by
-        }
-        const response = await axios.get(
-          `/customers/${customerId.value}/contracts?page=${page}`
-        );
-        contracts.value = response.data.data;
-        currentPage.value = response.data.current_page;
-        lastPage.value = response.data.last_page;
-      } catch (error) {
-        console.error("Error fetching contracts:", error);
-        customerId_error.value = true;
-      } finally {
-        getDataLoading.value = false;
-      }
-    };
-
-    const form = ref({
-      customer_id: customerId.value,
-      start_date: "",
-      expire_date: "",
-      payment: "",
-      note: "",
-      created_by: "",
-    });
-
-    const confirmDelete = (id) => {
-      deleteId.value = id;
-      deleteModalOpen.value = true;
-    };
-
+    const contractsStore = useContractsStore();
+    
+    // Local UI state
+    const isModalOpen = ref(false);
+    const deleteModalOpen = ref(false);
+    
+    // Set customer ID from route params
+    const customerId = ref(route.params.customer_id);
+    contractsStore.setCustomerId(customerId.value);
+    
+    // Computed properties
+    const contracts = computed(() => contractsStore.contracts);
+    const loading = computed(() => contractsStore.isLoading);
+    const getDataLoading = computed(() => contractsStore.getDataLoading);
+    const form = computed(() => contractsStore.form);
+    const currentPage = computed(() => contractsStore.currentPage);
+    const lastPage = computed(() => contractsStore.lastPage);
+    const customerId_error = computed(() => contractsStore.customerIdError);
+    
     const openModal = (contract = null) => {
-      if (contract) {
-        form.value = { ...contract };
-      } else {
-        form.value = {
-          customer_id: customerId.value,
-          start_date: "",
-          expire_date: "",
-          payment: "",
-          note: "",
-          created_by: userStore.user?.id, // Auto-set user ID
-        };
-      }
+      contractsStore.setFormData(contract);
       isModalOpen.value = true;
     };
-
+    
     const closeModal = () => {
       isModalOpen.value = false;
     };
-
+    
     const saveContract = async () => {
-      loading.value = true;
-      try {
-        if (!userStore.user) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        } else {
-          if (form.value.id) {
-            await axios.put(`/contracts/${form.value.id}`, form.value);
-            toast.success("contracts updated successfully!");
-          } else {
-            await axios.post("/contracts", form.value);
-            toast.success("contracts added successfully!");
-          }
-          fetchContracts(currentPage.value);
-          closeModal();
-        }
-      } catch (error) {
-        toast.error("Error!");
-      } finally {
-        loading.value = false;
+      const success = await contractsStore.saveContract();
+      if (success) {
+        closeModal();
       }
     };
-
-    onMounted(async () => {
-      fetchContracts();
-    });
+    
+    const confirmDelete = (id) => {
+      contractsStore.setDeleteId(id);
+      deleteModalOpen.value = true;
+    };
+    
     const deleteContracts = async () => {
-      loading.value = true;
-      try {
-        if (!userStore.user) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        }
-
-
-       else{
-         // Remove from local state
-         contracts.value = contracts.value.filter(
-          (contract) => contract.id !== deleteId.value
-        );
-
-        await axios.delete(`${API_URL}/contracts/${deleteId.value}`);
-
+      const success = await contractsStore.deleteContract();
+      if (success) {
         deleteModalOpen.value = false;
-
-        // Ensure the list is updated from API
-        await fetchContracts(currentPage.value);
-
-        toast.success("Contract deleted successfully!");
-       }
-      } catch (error) {
-        toast.error("Error deleting contract!");
-      } finally {
-        loading.value = false;
       }
     };
-
+    
+    const fetchContracts = (page = 1) => {
+      contractsStore.fetchContracts(page);
+    };
+    
+    onMounted(async () => {
+      await contractsStore.fetchContracts();
+    });
+    
     return {
-      customerId,
       contracts,
       loading,
-      isModalOpen,
+      getDataLoading,
       form,
+      currentPage,
+      lastPage,
+      customerId_error,
+      
+      customerId,
+      isModalOpen,
+      deleteModalOpen,
+      
       openModal,
       closeModal,
       saveContract,
       fetchContracts,
-      currentPage,
-      lastPage,
-      getDataLoading,
-      deleteModalOpen,
       confirmDelete,
       deleteContracts,
-      customerId_error,
-      
     };
   },
   components: {
-    Loading,Error
+    Loading,
+    Error
   },
 };
 </script>

@@ -112,94 +112,31 @@
   </div>
   
 </template>
-
 <script>
-import { ref } from "vue";
-import axios from "axios";
-import { useToast } from "vue-toastification";
-import VueCookies from "vue-cookies";
+import { computed, onMounted } from "vue";
 import Loading from "../components/Loading.vue";
+import { useAuthStore } from "../store/authStore";
 
-const API_URL = import.meta.env.VITE_API_URL;
-axios.defaults.baseURL = API_URL;
 
 export default {
   setup() {
-    const loginForm = ref({ email: "", password: "" });
-    const loginErrors = ref({});
-    const generalError = ref(null);
-    const loading = ref(false);
-    const dataLoading = ref(false);
-    const toast = useToast();
-
-    // Fetch user data (if needed)
-    const token = VueCookies.get("jwt");
-    const fetchUser = async () => {
-      dataLoading.value = true;
-      try {
-        await axios.get("/user", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch (error) {
-        console.error(error);
-      } finally {
-        dataLoading.value = false;
-      }
-    };
-
-    // Handle normal login
-    const login = async () => {
-      loading.value = true;
-      loginErrors.value = {};
-      generalError.value = null;
-
-      try {
-        const response = await axios.post("/login", loginForm.value);
-
-        // Save JWT token
-        VueCookies.set("jwt", response.data.token, "1d");
-
-        toast.success("Login successful!", { timeout: 2000 });
-
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
-      } catch (error) {
-        if (error.response) {
-          if (error.response.status === 422) {
-            loginErrors.value = error.response.data.errors || {};
-          } else {
-            generalError.value = error.response.data.message || "Login failed.";
-          }
-        } else {
-          generalError.value = "An unexpected error occurred.";
-        }
-      } finally {
-        loading.value = false;
-      }
-    };
-
-    // **Google Login Function**
-    const loginWithGoogle = async () => {
-      try {
-        const response = await axios.get("/google"); // Fetch Google login URL
-        window.location.href = response.data.url; // Redirect user to Google login page
-      } catch (error) {
-        console.error("Google login failed", error);
-        toast.error("Google login failed. Try again.");
-      }
-    };
-
-    fetchUser();
-
+    const authStore = useAuthStore();
+    
+    authStore.clearLoginForm();
+    
+    onMounted(() => {
+      authStore.fetchUser();
+    });
+    
     return {
-      loginForm,
-      loginErrors,
-      generalError,
-      loading,
-      dataLoading,
-      login,
-      loginWithGoogle,
+      loginForm: computed(() => authStore.loginForm),
+      loginErrors: computed(() => authStore.loginErrors),
+      generalError: computed(() => authStore.generalError),
+      loading: computed(() => authStore.loading),
+      dataLoading: computed(() => authStore.dataLoading),
+      
+      login: authStore.login,
+      loginWithGoogle: authStore.loginWithGoogle
     };
   },
   components: { Loading },

@@ -168,48 +168,38 @@ Show Contracts        </span>
 </template>
 
 <script>
-import axios from "axios";
-import { ref, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
-import { useToast } from "vue-toastification";
 import Error from "./error.vue";
 import { useUserStore } from "../store/userStore";
+import { useCustomerDetailStore } from "../store/customerDetailStore";
 
 export default {
   setup() {
     const route = useRoute();
-    const customerId = ref(route.params.customer_id);
-    const customer = ref(null);
-    const getDataLoading = ref(true);
-    const toast = useToast();
-    // Get User Store (Pinia)
     const userStore = useUserStore();
-    const fetchCustomer = async () => {
-      getDataLoading.value = true;
-      try {
-        await userStore.fetchUser(); // Fetch user first
+    const customerDetailStore = useCustomerDetailStore();
+    
+    customerDetailStore.setCustomerId(route.params.customer_id);
+    
+    onMounted(() => {
+      customerDetailStore.fetchCustomer();
+    });
 
-        const response = await axios.get(`/customer/${customerId.value}`);
-        customer.value = response.data;
-      } catch (error) {
-        console.error("Error fetching contract:", error);
-      } finally {
-        getDataLoading.value = false;
-      }
-    };
-    
- 
-    onMounted(fetchCustomer);
-    
     return {
-      customerId,
-      customer,
-      getDataLoading,
+
+        customerId: computed(() => customerDetailStore.customerId),
+      customer: computed(() => customerDetailStore.customer),
+      getDataLoading: computed(() => customerDetailStore.getDataLoading),
+      
+
+      user: computed(() => userStore.user),
     };
   },
   components: {
-    Loading,Error
+    Loading,
+    Error
   },
 };
 </script>

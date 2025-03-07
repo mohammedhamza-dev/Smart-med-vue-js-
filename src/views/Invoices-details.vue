@@ -350,176 +350,50 @@
 </template>
 
 <script>
-import axios from "axios";
-import { ref, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Loading from "../components/Loading.vue";
-import { useToast } from "vue-toastification";
-import VueCookies from "vue-cookies"; // Import vue-cookies
 import { useUserStore } from "../store/userStore";
 import Error from "./error.vue";
+import { useInvoiceItemsStore } from "../store/invoiceItemsStore";
 
-const API_URL = import.meta.env.VITE_API_URL;
-axios.defaults.baseURL = API_URL;
 
 export default {
   setup() {
     const route = useRoute();
-    const invoiceId = ref(route.params.invoice_id);
-    const customerId_error = ref(false);
-
-    const invoiceItems = ref([]);
-    const loading = ref(false);
-    const isModalOpen = ref(false);
-    const toast = useToast();
-    const getDataLoading = ref(true);
-    const deleteModalOpen = ref(false); // Add this
-    const deleteId = ref(null); // Add this
-    const currentPage = ref(1);
-    const lastPage = ref(1);
-    const userName = ref(null);
-    const token = VueCookies.get("jwt"); // Change 'jwt' to your actual JWT cookie name
-  // Get User Store (Pinia)
-  const userStore = useUserStore();
-    const user = userStore.user;
-
-   
-
-
-    const fetchInvoiceItems = async (page = 1) => {
-      getDataLoading.value = true;
-      try {
-        await userStore.fetchUser(); // Fetch user first
-     
-        const response = await axios.get(
-          `/invoice-items/invoice/${invoiceId.value}?page=${page}`
-        );
-
-        invoiceItems.value = response.data.data; // Data array
-        currentPage.value = response.data.current_page; // Current page
-        lastPage.value = response.data.last_page; // Last page
-      } catch (error) {
-        customerId_error.value = true;
-      } finally {
-        getDataLoading.value = false;
-      }
-    };
-
-    const form = ref({
-      invoice_id: invoiceId.value,
-      item_name: "",
-      price: "",
-      quantity: "",
-      subtotal: "",
-      note: "",
-    });
-
-    const openModal = (item = null) => {
-      form.value = item
-        ? { ...item }
-        : {
-            invoice_id: invoiceId.value,
-            item_name: "",
-            price: "",
-            quantity: "",
-            subtotal: "",
-            note: "",
-          };
-      isModalOpen.value = true;
-    };
-
-    const closeModal = () => {
-      isModalOpen.value = false;
-    };
-
-    const saveInvoiceItem = async () => {
-      loading.value = true;
-      try {
-        if (!userStore.user) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        } 
-
-        else{
-          if (form.value.id) {
-          await axios.put(`/invoice-items/${form.value.id}`, form.value);
-          toast.success("invoice updated successfully!");
-        } else {
-          await axios.post("/invoice-items", form.value);
-          toast.success("invoice added successfully!");
-        }
-        fetchInvoiceItems();
-        closeModal();
-
-        }
- 
-      } catch (error) {
-        toast.error("Error saving invoice item");
-
-      } finally {
-        loading.value = false;
-      }
-    };
-    const confirmDelete = (id) => {
-      deleteId.value = id;
-      deleteModalOpen.value = true;
-    };
-
-    const deleteInvoice = async () => {
-      loading.value = true;
-      try {
-        if (!userStore.user) {
-          swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Please log in to continue",
-            footer: '<a href="/login">Need access? Log in here</a>',
-          });
-        } 
-
-        else{
-          await axios.delete(`/invoice-items/${deleteId.value}`);
-        deleteModalOpen.value = false;
-        fetchInvoiceItems();
-        toast.success("invoice Deleted successfully!");
-
-        }
-      
-      } catch (error) {
-        toast.error("Error Deleting invoice item");
-      } finally {
-        loading.value = false;
-      }
-    };
+    const userStore = useUserStore();
+    const invoiceItemsStore = useInvoiceItemsStore();
+    
+    invoiceItemsStore.setInvoiceId(route.params.invoice_id);
+    
     onMounted(() => {
-      fetchInvoiceItems()
+      invoiceItemsStore.fetchInvoiceItems();
     });
 
     return {
-      invoiceId,
-      confirmDelete,
-      deleteInvoice,
-      deleteModalOpen,
-      currentPage,
-      lastPage,
-      getDataLoading,
-      invoiceItems,
-      loading,
-      isModalOpen,
-      form,
-      openModal,
-      closeModal,
-      saveInvoiceItem,
-      fetchInvoiceItems,
-      getDataLoading,
-      customerId_error
+
+      invoiceId: computed(() => invoiceItemsStore.invoiceId),
+      invoiceItems: computed(() => invoiceItemsStore.invoiceItems),
+      loading: computed(() => invoiceItemsStore.loading),
+      isModalOpen: computed(() => invoiceItemsStore.isModalOpen),
+      deleteModalOpen: computed(() => invoiceItemsStore.deleteModalOpen),
+      deleteId: computed(() => invoiceItemsStore.deleteId),
+      form: computed(() => invoiceItemsStore.form),
+      currentPage: computed(() => invoiceItemsStore.currentPage),
+      lastPage: computed(() => invoiceItemsStore.lastPage),
+      getDataLoading: computed(() => invoiceItemsStore.getDataLoading),
+      customerId_error: computed(() => invoiceItemsStore.customerId_error),
       
+      fetchInvoiceItems: invoiceItemsStore.fetchInvoiceItems,
+      openModal: invoiceItemsStore.openModal,
+      closeModal: invoiceItemsStore.closeModal,
+      saveInvoiceItem: invoiceItemsStore.saveInvoiceItem,
+      confirmDelete: invoiceItemsStore.confirmDelete,
+      deleteInvoice: invoiceItemsStore.deleteInvoice,
+      
+      user: computed(() => userStore.user),
     };
   },
-  components: { Loading,Error },
+  components: { Loading, Error },
 };
 </script>

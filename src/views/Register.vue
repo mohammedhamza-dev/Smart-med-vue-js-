@@ -142,91 +142,43 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
-import { useToast } from "vue-toastification";
-import VueCookies from "vue-cookies";
 import Loading from "../components/Loading.vue";
+import { useAuthStore } from "../store/authStore";
 
-const API_URL = import.meta.env.VITE_API_URL;
-axios.defaults.baseURL = API_URL; // Set API base URL
 
 export default {
   setup() {
     const router = useRouter();
-    const registerForm = ref({
-      name: "",
-      email: "",
-      password: "",
-      password_confirmation: "",
+    const authStore = useAuthStore();
+    
+    // Clear any previous registration data
+    authStore.clearRegisterForm();
+    
+    // Create a wrapper function to pass router to the register action
+    const handleRegister = async () => {
+      return await authStore.register(router);
+    };
+    
+    onMounted(() => {
+      authStore.fetchUser();
     });
-
-    const registerErrors = ref({});
-    const registerSuccess = ref(null);
-    const loading = ref(false);
-    const toast = useToast();
-    const token = VueCookies.get("jwt"); // Change 'jwt_token' to your actual JWT cookie name
-    const dataLoading = ref(false);
-    const fetchUser = async () => {
-      dataLoading.value = true;
-      try {
-        const response = await axios.get("/user", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch (error) {
-      } finally {
-        dataLoading.value = false; // Hide the loading spinner after fetching is complete
-      }
-    };
-    // **Google Login Function**
-    const loginWithGoogle = async () => {
-      try {
-        const response = await axios.get("/google"); // Fetch Google login URL
-        window.location.href = response.data.url; // Redirect user to Google login page
-      } catch (error) {
-        console.error("Google login failed", error);
-        toast.error("Google login failed. Try again.");
-      }
-    };
-
-    const register = async () => {
-      loading.value = true; // Start loading
-      try {
-        registerErrors.value = {};
-        registerSuccess.value = null;
-        const response = await axios.post("/register", registerForm.value);
-        registerSuccess.value = response.data.message;
-        toast.success("Registration successful!", {
-          timeout: 2000,
-        });
-
-        setTimeout(() => {
-          router.push("/login");
-        }, 2000);
-      } catch (error) {
-        if (error.response && error.response.data.errors) {
-          registerErrors.value = error.response.data.errors;
-        }
-      } finally {
-        loading.value = false; // Stop loading
-      }
-    };
-    fetchUser();
-
+    
     return {
-      registerForm,
-      registerErrors,
-      registerSuccess,
-      loading,
-      dataLoading,
-      register,
-      loginWithGoogle,
+      // Return store properties as computed values for reactivity
+      registerForm: computed(() => authStore.registerForm),
+      registerErrors: computed(() => authStore.registerErrors),
+      registerSuccess: computed(() => authStore.registerSuccess),
+      loading: computed(() => authStore.loading),
+      dataLoading: computed(() => authStore.dataLoading),
+      
+      // Return wrapped actions and direct actions
+      register: handleRegister,
+      loginWithGoogle: authStore.loginWithGoogle
     };
   },
-  components: {
-    Loading,
-  },
+  components: { Loading },
 };
 </script>
 
