@@ -170,10 +170,10 @@ Show Contracts        </span>
 <script>
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import Loading from "../components/Loading.vue";
-import Error from "./error.vue";
-import { useUserStore } from "../store/userStore";
-import { useCustomerDetailStore } from "../store/customerDetailStore";
+import { useCustomerDetailStore } from "../../store/customerDetailStore";
+import Loading from "../../components/Loading.vue";
+import Error from "../error.vue";
+import { useUserStore } from "../../store/userStore";
 
 export default {
   setup() {

@@ -3,11 +3,18 @@
     <Loading />
   </div>
 
-  <div v-else class="min-h-screen flex pt-[20px] items-center justify-center bg-gray-50 px-6">
-    <div class="max-w-4xl w-full h-full bg-white shadow-lg rounded-xl flex overflow-hidden">
+  <div
+    v-else
+    class="min-h-screen flex pt-[40px] items-center justify-center bg-gray-50 px-6"
+  >
+    <div
+      class="max-w-4xl w-full h-full bg-white shadow-lg rounded-xl flex overflow-hidden"
+    >
       <!-- Left Section (Form) -->
       <div class="w-full lg:w-1/2 p-8">
-        <h2 class="text-2xl font-semibold text-gray-700 text-center">Login</h2>
+        <h2 class="text-2xl font-semibold text-gray-700 text-center">
+          Create an Account
+        </h2>
 
         <!-- Google Login Button -->
         <button
@@ -40,37 +47,59 @@
         </button>
 
         <div class="my-6 text-gray-500 text-center relative border-t">
-          <span class="bg-white px-2 absolute left-1/2 transform -translate-x-1/2 -top-3">or</span>
+          <span
+            class="bg-white px-2 absolute left-1/2 transform -translate-x-1/2 -top-3"
+            >or</span
+          >
         </div>
 
-        <!-- Email/Password Login Form -->
-        <form @submit.prevent="login" class="space-y-4">
+        <form @submit.prevent="register" class="space-y-4">
           <div class="pb-3">
             <input
-              v-model="loginForm.email"
+              v-model="registerForm.name"
+              class="input-field"
+              type="text"
+              placeholder="Full Name"
+            />
+            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.name">
+              {{ registerErrors.name[0] }}
+            </p>
+          </div>
+
+          <div class="pb-3">
+            <input
+              v-model="registerForm.email"
               class="input-field"
               type="email"
               placeholder="Email Address"
-              required
             />
-            <p v-if="loginErrors.email" class="text-red-600 mt-2 text-sm">{{ loginErrors.email }}</p>
+            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.email">
+              {{ registerErrors.email[0] }}
+            </p>
           </div>
-
           <div class="pb-3">
             <input
-              v-model="loginForm.password"
+              v-model="registerForm.password"
               class="input-field"
               type="password"
               placeholder="Password"
-              required
             />
-            <p v-if="loginErrors.password" class="text-red-600 mt-2 text-sm">{{ loginErrors.password }}</p>
           </div>
 
-          <!-- General Error -->
-          <span v-if="generalError" class="text-red-600 mt-2 text-sm">{{ generalError }}</span>
+          <div class="">
+            <input
+              v-model="registerForm.password_confirmation"
+              class="input-field"
+              type="password"
+              placeholder="Confirm Password"
+            />
 
-          <!-- Login Button -->
+            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.password">
+              {{ registerErrors.password[0] }}
+            </p>
+          </div>
+
+          <!-- Register Button -->
           <button
             type="submit"
             class="w-full flex items-center justify-center bg-indigo-800 text-white py-3 rounded-lg hover:bg-indigo-700 active:bg-indigo-900 transition"
@@ -89,56 +118,79 @@
               <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
               <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"></path>
             </svg>
-            <p v-if="!loading">Login</p>
+            <p v-if="!loading">Register</p>
             <p v-else>Processing...</p>
           </button>
         </form>
-<p class="text-center mt-5">        Don’t have an account? <router-link class="font-[600]"
-  to="/Register"
-  >
-  Sign up
+        <p class="text-center mt-5">
+          Already have an account ?<router-link class="font-[600]" to="/Login">
+            Sign in
+          </router-link>
+        </p>
+      </div>
 
-</router-link>
-</p>      </div>
+      <!-- Right Section (Image) -->
       <div
-          class="flex-1 bg-indigo-900 m-3 rounded-xl text-center hidden lg:flex"
-        >
-          <div
-            class="m-12 xl:m-16 logo-bg w-full bg-contain bg-center bg-no-repeat"
-          ></div>
-        </div> 
-        
-         </div>
+        class="flex-1 bg-indigo-900 m-3 rounded-xl text-center hidden lg:flex"
+      >
+        <div
+          class="m-12 xl:m-16 logo-bg w-full bg-contain bg-center bg-no-repeat"
+        ></div>
+      </div>
+    </div>
   </div>
-  
 </template>
+
 <script>
 import { computed, onMounted } from "vue";
-import Loading from "../components/Loading.vue";
-import { useAuthStore } from "../store/authStore";
-
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../../store/authStore";
+import Loading from "../../components/Loading.vue";
 
 export default {
   setup() {
+    const router = useRouter();
     const authStore = useAuthStore();
-    
-    authStore.clearLoginForm();
-    
+
+    // Clear any previous registration data
+    authStore.clearRegisterForm();
+
+    const handleRegister = async () => {
+      return await authStore.register(router);
+    };
+
     onMounted(() => {
       authStore.fetchUser();
     });
-    
+
     return {
-      loginForm: computed(() => authStore.loginForm),
-      loginErrors: computed(() => authStore.loginErrors),
-      generalError: computed(() => authStore.generalError),
+      registerForm: computed(() => authStore.registerForm),
+      registerErrors: computed(() => authStore.registerErrors),
+      registerSuccess: computed(() => authStore.registerSuccess),
       loading: computed(() => authStore.loading),
       dataLoading: computed(() => authStore.dataLoading),
-      
-      login: authStore.login,
-      loginWithGoogle: authStore.loginWithGoogle
+
+      register: handleRegister,
+      loginWithGoogle: authStore.loginWithGoogle,
     };
   },
   components: { Loading },
 };
 </script>
+
+<style>
+.input-field {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 14px;
+  background-color: #f9fafb;
+  transition: border-color 0.3s;
+}
+.input-field:focus {
+  border-color: #6366f1;
+  background-color: #ffffff;
+}
+</style>

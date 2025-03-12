@@ -5,16 +5,14 @@
 
   <div
     v-else
-    class="min-h-screen flex pt-[40px] items-center justify-center bg-gray-50 px-6"
+    class="min-h-screen flex pt-[20px] items-center justify-center bg-gray-50 px-6"
   >
     <div
       class="max-w-4xl w-full h-full bg-white shadow-lg rounded-xl flex overflow-hidden"
     >
       <!-- Left Section (Form) -->
       <div class="w-full lg:w-1/2 p-8">
-        <h2 class="text-2xl font-semibold text-gray-700 text-center">
-          Create an Account
-        </h2>
+        <h2 class="text-2xl font-semibold text-gray-700 text-center">Login</h2>
 
         <!-- Google Login Button -->
         <button
@@ -53,53 +51,40 @@
           >
         </div>
 
-        <form @submit.prevent="register" class="space-y-4">
+        <!-- Email/Password Login Form -->
+        <form @submit.prevent="login" class="space-y-4">
           <div class="pb-3">
             <input
-              v-model="registerForm.name"
-              class="input-field"
-              type="text"
-              placeholder="Full Name"
-            />
-            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.name">
-              {{ registerErrors.name[0] }}
-            </p>
-          </div>
-
-          <div class="pb-3">
-            <input
-              v-model="registerForm.email"
+              v-model="loginForm.email"
               class="input-field"
               type="email"
               placeholder="Email Address"
+              required
             />
-            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.email">
-              {{ registerErrors.email[0] }}
+            <p v-if="loginErrors.email" class="text-red-600 mt-2 text-sm">
+              {{ loginErrors.email }}
             </p>
           </div>
+
           <div class="pb-3">
             <input
-              v-model="registerForm.password"
+              v-model="loginForm.password"
               class="input-field"
               type="password"
               placeholder="Password"
+              required
             />
-          </div>
-
-          <div class="">
-            <input
-              v-model="registerForm.password_confirmation"
-              class="input-field"
-              type="password"
-              placeholder="Confirm Password"
-            />
-
-            <p class="text-red-600 mt-2 text-sm" v-if="registerErrors.password">
-              {{ registerErrors.password[0] }}
+            <p v-if="loginErrors.password" class="text-red-600 mt-2 text-sm">
+              {{ loginErrors.password }}
             </p>
           </div>
 
-          <!-- Register Button -->
+          <!-- General Error -->
+          <span v-if="generalError" class="text-red-600 mt-2 text-sm">{{
+            generalError
+          }}</span>
+
+          <!-- Login Button -->
           <button
             type="submit"
             class="w-full flex items-center justify-center bg-indigo-800 text-white py-3 rounded-lg hover:bg-indigo-700 active:bg-indigo-900 transition"
@@ -118,18 +103,15 @@
               <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
               <path d="M12 2a10 10 0 0 1 10 10" stroke-opacity="0.75"></path>
             </svg>
-            <p v-if="!loading">Register</p>
+            <p v-if="!loading">Login</p>
             <p v-else>Processing...</p>
           </button>
         </form>
         <p class="text-center mt-5">
-          Already have an account ?<router-link class="font-[600]" to="/Login">
-            Sign in
-          </router-link>
+          Don’t have an account?
+          <router-link class="font-[600]" to="/Register"> Sign up </router-link>
         </p>
       </div>
-
-      <!-- Right Section (Image) -->
       <div
         class="flex-1 bg-indigo-900 m-3 rounded-xl text-center hidden lg:flex"
       >
@@ -140,61 +122,32 @@
     </div>
   </div>
 </template>
-
 <script>
 import { computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import Loading from "../components/Loading.vue";
-import { useAuthStore } from "../store/authStore";
-
+import { useAuthStore } from "../../store/authStore";
+import Loading from "../../components/Loading.vue";
 
 export default {
   setup() {
-    const router = useRouter();
     const authStore = useAuthStore();
-    
-    // Clear any previous registration data
-    authStore.clearRegisterForm();
-    
-    // Create a wrapper function to pass router to the register action
-    const handleRegister = async () => {
-      return await authStore.register(router);
-    };
-    
+
+    authStore.clearLoginForm();
+
     onMounted(() => {
       authStore.fetchUser();
     });
-    
+
     return {
-      // Return store properties as computed values for reactivity
-      registerForm: computed(() => authStore.registerForm),
-      registerErrors: computed(() => authStore.registerErrors),
-      registerSuccess: computed(() => authStore.registerSuccess),
+      loginForm: computed(() => authStore.loginForm),
+      loginErrors: computed(() => authStore.loginErrors),
+      generalError: computed(() => authStore.generalError),
       loading: computed(() => authStore.loading),
       dataLoading: computed(() => authStore.dataLoading),
-      
-      // Return wrapped actions and direct actions
-      register: handleRegister,
-      loginWithGoogle: authStore.loginWithGoogle
+
+      login: authStore.login,
+      loginWithGoogle: authStore.loginWithGoogle,
     };
   },
   components: { Loading },
 };
 </script>
-
-<style>
-.input-field {
-  width: 100%;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  outline: none;
-  font-size: 14px;
-  background-color: #f9fafb;
-  transition: border-color 0.3s;
-}
-.input-field:focus {
-  border-color: #6366f1;
-  background-color: #ffffff;
-}
-</style>

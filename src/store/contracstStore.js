@@ -3,9 +3,11 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
 import { useUserStore } from './userStore';
+import VueCookies from 'vue-cookies';
 
 const API_URL = import.meta.env.VITE_API_URL;
 axios.defaults.baseURL = API_URL;
+const token = VueCookies.get("jwt"); 
 
 export const useContractsStore = defineStore('contracts', {
   state: () => ({
@@ -97,11 +99,17 @@ export const useContractsStore = defineStore('contracts', {
         }
         
         if (this.form.id) {
-          await axios.put(`/contracts/${this.form.id}`, this.form);
+          await axios.put(`/contracts/update/${this.form.id}`, this.form,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           toast.success("Contract updated successfully!");
         } else {
-          await axios.post("/contracts", this.form);
-          toast.success("Contract added successfully!");
+          await axios.post(`${API_URL}/contracts/store`, this.form, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          toast.success("Customer added successfully!");
         }
         
         await this.fetchContracts(this.currentPage);
@@ -139,7 +147,11 @@ export const useContractsStore = defineStore('contracts', {
           (contract) => contract.id !== this.deleteId
         );
         
-        await axios.delete(`/contracts/${this.deleteId}`);
+        await axios.delete(`/contracts/delete/${this.deleteId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         
         // Refresh from API to ensure data consistency
         await this.fetchContracts(this.currentPage);

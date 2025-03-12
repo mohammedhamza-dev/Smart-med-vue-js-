@@ -187,9 +187,9 @@
   <script>
   import { computed, onMounted } from "vue";
   import { useRoute } from "vue-router";
-  import Loading from "../components/Loading.vue";
-  import { useUserStore } from "../store/userStore";
-  import { useContractDetailStore } from "../store/contractDetailStore";
+  import { useUserStore } from "../../store/userStore";
+  import { useContractDetailStore } from "../../store/contractDetailStore";
+import Loading from "../../components/Loading.vue";
   
   export default {
     setup() {

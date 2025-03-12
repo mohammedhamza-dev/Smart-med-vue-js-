@@ -676,10 +676,10 @@
 <script>
 import { ref, onMounted, computed } from "vue";
 import { useToast } from "vue-toastification";
-import Loading from "../components/Loading.vue";
 import { useRouter } from "vue-router";
-import { useUserStore } from "../store/userStore";
-import { useCustomersStore } from "../store/customersStore";
+import { useUserStore } from "../../store/userStore";
+import { useCustomersStore } from "../../store/customersStore";
+import Loading from "../../components/Loading.vue";
 
 export default {
   setup() {

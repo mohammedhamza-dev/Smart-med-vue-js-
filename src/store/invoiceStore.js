@@ -1,9 +1,12 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import { useToast } from 'vue-toastification';
-import { useUserStore } from './userStore';
+import { defineStore } from "pinia";
+import axios from "axios";
+import { useToast } from "vue-toastification";
+import { useUserStore } from "./userStore";
+import VueCookies from "vue-cookies";
 
-export const useInvoiceStore = defineStore('invoice', {
+const token = VueCookies.get("jwt");
+
+export const useInvoiceStore = defineStore("invoice", {
   state: () => ({
     invoices: [],
     loading: false,
@@ -20,32 +23,32 @@ export const useInvoiceStore = defineStore('invoice', {
       invoice_date: "",
       done: false,
       created_by: null,
-    }
+    },
   }),
-  
+
   actions: {
     setCustomerId(id) {
       this.customerId = id;
       this.form.customer_id = id;
     },
-    
+
     async fetchInvoices(page = 1) {
       this.getDataLoading = true;
       try {
         const userStore = useUserStore();
         await userStore.fetchUser(); // Fetch user first
-        
+
         if (userStore.user) {
           this.form.created_by = userStore.user.id;
         }
-        
+
         const response = await axios.get(
           `/invoices/customer/${this.customerId}?page=${page}`
         );
 
         this.invoices = response.data.data.map((invoice) => ({
           ...invoice,
-          done: Boolean(invoice.done), 
+          done: Boolean(invoice.done),
         }));
 
         this.currentPage = response.data.current_page;
@@ -56,30 +59,33 @@ export const useInvoiceStore = defineStore('invoice', {
         this.getDataLoading = false;
       }
     },
-    
+
     openModal(invoice = null) {
       const userStore = useUserStore();
       this.form = invoice
-        ? { ...invoice, done: invoice.done ?? false } 
+        ? { ...invoice, done: invoice.done ?? false }
         : {
             customer_id: this.customerId,
             invoice_date: "",
             done: false,
-            created_by: userStore.user?.id, 
+            created_by: userStore.user?.id,
           };
       this.isModalOpen = true;
     },
-    
+
     closeModal() {
       this.isModalOpen = false;
     },
-    
+    closeDeleteModal() {
+      this.deleteModalOpen = false;
+    },
+
     async saveInvoice() {
       const toast = useToast();
       this.loading = true;
       try {
         const userStore = useUserStore();
-        
+
         if (!userStore.user) {
           swal.fire({
             icon: "error",
@@ -89,10 +95,14 @@ export const useInvoiceStore = defineStore('invoice', {
           });
         } else {
           if (this.form.id) {
-            await axios.put(`/invoices/${this.form.id}`, this.form);
+            await axios.put(`/invoice/update/${this.form.id}`, this.form, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
             toast.success("Invoice updated successfully!");
           } else {
-            await axios.post("/invoices", this.form);
+            await axios.post("/invoice/store", this.form, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
             toast.success("Invoice added successfully!");
           }
           await this.fetchInvoices();
@@ -104,12 +114,12 @@ export const useInvoiceStore = defineStore('invoice', {
         this.loading = false;
       }
     },
-    
+
     confirmDelete(id) {
       this.deleteId = id;
       this.deleteModalOpen = true;
     },
-    
+
     async deleteInvoice() {
       const toast = useToast();
       this.loading = true;
@@ -123,7 +133,13 @@ export const useInvoiceStore = defineStore('invoice', {
             footer: '<a href="/login">Need access? Log in here</a>',
           });
         } else {
-          await axios.delete(`/invoices/${this.deleteId}`);
+          await axios.delete(
+            `/invoice/delete/${this.deleteId}`,
+
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           this.deleteModalOpen = false;
           await this.fetchInvoices();
           toast.success("Invoice deleted successfully!");
@@ -133,6 +149,6 @@ export const useInvoiceStore = defineStore('invoice', {
       } finally {
         this.loading = false;
       }
-    }
-  }
+    },
+  },
 });

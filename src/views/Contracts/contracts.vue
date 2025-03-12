@@ -455,11 +455,11 @@
 <script>
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import Loading from "../components/Loading.vue";
 import { useToast } from "vue-toastification";
-import { useUserStore } from "../store/userStore";
-import Error from "./error.vue";
-import { useContractsStore } from "../store/contracstStore";
+import { useUserStore } from "../../store/userStore";
+import { useContractsStore } from "../../store/contracstStore";
+import Loading from "../../components/Loading.vue";
+import Error from "../error.vue";
 
 export default {
   setup() {

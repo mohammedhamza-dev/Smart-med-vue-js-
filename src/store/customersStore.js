@@ -5,6 +5,7 @@ import { useUserStore } from './userStore';
 import VueCookies from 'vue-cookies';
 
 const API_URL = import.meta.env.VITE_API_URL;
+const token = VueCookies.get("jwt"); 
 
 export const useCustomersStore = defineStore('customers', {
   state: () => ({
@@ -16,6 +17,7 @@ export const useCustomersStore = defineStore('customers', {
       last_page: 1,
     },
     isLoading: false,
+    
     getDataLoading: true,
     deleteId: null,
     form: {
@@ -62,7 +64,7 @@ export const useCustomersStore = defineStore('customers', {
         }
         
         const response = await axios.get(
-          `${API_URL}/customers?page=${page}&per_page=${this.pagination.per_page}`,
+          `${API_URL}/customers/get?page=${page}&per_page=${this.pagination.per_page}`,
           { headers: { Authorization: `Bearer ${userStore.user?.token}` } }
         );
 
@@ -106,7 +108,7 @@ export const useCustomersStore = defineStore('customers', {
     async saveCustomer() {
       this.isLoading = true;
       const toast = useToast();
-      
+
       try {
         const userStore = useUserStore();
         
@@ -122,16 +124,16 @@ export const useCustomersStore = defineStore('customers', {
         
         if (this.form.id) {
           await axios.put(
-            `${API_URL}/customers/${this.form.id}`,
+            `${API_URL}/customers/update/${this.form.id}`,
             this.form,
             {
-              headers: { Authorization: `Bearer ${userStore.user?.token}` },
+              headers: { Authorization: `Bearer ${token}` },
             }
           );
           toast.success("Customer updated successfully!");
         } else {
-          await axios.post(`${API_URL}/customers`, this.form, {
-            headers: { Authorization: `Bearer ${userStore.user?.token}` },
+          await axios.post(`${API_URL}/customers/store`, this.form, {
+            headers: { Authorization: `Bearer ${token}` },
           });
           toast.success("Customer added successfully!");
         }
@@ -164,8 +166,8 @@ export const useCustomersStore = defineStore('customers', {
           return false;
         }
         
-        await axios.delete(`${API_URL}/customers/${this.deleteId}`, {
-          headers: { Authorization: `Bearer ${userStore.user?.token}` },
+        await axios.delete(`${API_URL}/customers/delete/${this.deleteId}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         
         await this.fetchCustomers(this.pagination.current_page);

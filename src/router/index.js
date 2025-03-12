@@ -1,14 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Customers from '../views/Customers.vue';
-import Invoices from '../views/Invoices-details.vue';
-import Login from '../views/Login.vue';
-import Register from '../views/Register.vue';
-import Customer_details from '../views/Customer-details.vue';
-import InvoiceList from '../views/InvoiceList.vue';
-import invoice_details from '../views/Invoices-details.vue';
-import Home from '../views/home.vue';
-import Contracts from '../views/contracts.vue';
-import ContractDetails from '../views/contract-details.vue';
+
+import Customer_details from '../views/Customers/Customer-details.vue';
+import invoice_details from '../views/Invoices/Invoices-details.vue';
+import Contracts from '../views/Contracts/contracts.vue';
+import ContractDetails from '../views/Contracts/contract-details.vue';
+import Customers from '../views/Customers/Customers.vue';
+import InvoiceList from '../views/Invoices/InvoiceList.vue';
+import Login from '../views/Auth/Login.vue';
+import Register from '../views/Auth/Register.vue';
 
 const routes = [
     { path: '/Customers', component: Customers },

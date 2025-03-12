@@ -1,7 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import store from './store';
-import router from './router';
 import '../src/style.css'
 import 'typeface-poppins';
 import VueCookies from 'vue-cookies';
@@ -10,6 +9,7 @@ import { createPinia } from "pinia"; // Import Pinia
 import Toast from "vue-toastification";
 // Import the CSS or use your own!
 import "vue-toastification/dist/index.css";
+import router from './router';
 const pinia = createPinia(); // Create Pinia instance
 
 const app = createApp(App);
